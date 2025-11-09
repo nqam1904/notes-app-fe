@@ -1,0 +1,82 @@
+@import "/public/css/variables.module.scss";
+
+.container {
+  width: 100%;
+  height: auto;
+  background-color: $white;
+  margin-top: 95px;
+  margin-bottom: 40px;
+
+  .loading {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .accordionContainer {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid $black_04;
+    width: 100%;
+    .backgroundActive {
+      background-color: $black_04;
+    }
+    .backgroundWhite {
+      background-color: $white;
+    }
+    .accordionHeaderContainer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 16px;
+      transition: background-color 0.2s ease-in-out;
+      border: none;
+      .title {
+        font-size: 16px;
+        line-height: 1.25rem;
+        font-weight: 600;
+        color: $black_17;
+      }
+      .iconChevron {
+        width: 2rem;
+        height: 1.5rem;
+        color: $black_17;
+        transition: all 0.3s ease-in-out;
+      }
+      .iconRotate {
+        transform: rotate(90deg);
+      }
+    }
+    .accordionBody {
+      border: 0.5px solid $black_04;
+      .textBody {
+        padding: 1rem;
+        font-size: 16px;
+        line-height: 1.8rem;
+        color: $black_12;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    .accordionContainer {
+      .accordionHeaderContainer {
+        padding: 0.5rem 1rem;
+        .title {
+          font-size: 14px;
+          text-align: left;
+        }
+      }
+      .accordionBody {
+        .textBody {
+          padding: 12px;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+@import "/public/css/variables.module.scss";
+
+.breadcrumb {
+  width: 1200px;
+  padding: 16px 48px;
+  margin: 0 auto;
+  a {
+    display: inline-block;
+    font-size: 18px;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  .linkPost {
+    display: inline-block;
+    font-size: 18px;
+    color: $primary;
+    &:not(:first-child)::before {
+      padding: 0 8px;
+      color: $black_12;
+      content: "/";
+    }
+  }
+}
+@media (max-width: 768px) {
+  .breadcrumb {
+    width: 100%;
+    padding: 0 24px;
+  }
+}

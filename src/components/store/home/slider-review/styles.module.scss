@@ -1,0 +1,79 @@
+@import "/public/css/variables.module.scss";
+
+.container {
+  padding-bottom: 24px;
+  .title {
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: $black_12;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .item {
+    border-radius: 8px;
+    border: 1px solid $black_06;
+    background-color: $white;
+    overflow: hidden;
+    height: 100%;
+    .headerItem {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 12px;
+      position: relative;
+
+      .avatar {
+        border-radius: 50%;
+        align-self: flex-start;
+      }
+
+      .rightHeader {
+        display: flex;
+        text-align: left;
+        flex-direction: column;
+        margin-left: 16px;
+
+        .name {
+          color: $black_17;
+          font-size: 18px;
+          font-weight: 500;
+          margin-bottom: 4px;
+        }
+
+        .occupation {
+          margin-top: 4px;
+          color: $black_12;
+          font-size: 16px;
+          font-style: italic;
+        }
+      }
+
+      .icFace {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        cursor: pointer;
+      }
+    }
+
+    .bodyItem {
+      width: 100%;
+      padding: 16px;
+      border-top: 1px solid $black_06;
+      .testimonial {
+        font-size: 18px;
+        color: $black_16;
+        line-height: 1.4;
+        font-style: oblique !important;
+      }
+    }
+  }
+  .loading {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 30px;
+    margin-top: 40px;
+  }
+}

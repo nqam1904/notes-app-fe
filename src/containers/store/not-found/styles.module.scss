@@ -1,0 +1,28 @@
+@import "/public/css/variables.module.scss";
+
+.section {
+  width: 1200px;
+  display: flex;
+  margin: 0 auto;
+  padding: 48px;
+  height: auto;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .error {
+    font-size: 150px;
+    color: $pink_05;
+    text-shadow: 1px 1px 1px $pink_06, 2px 2px 1px $pink_06,
+      3px 3px 1px $pink_06, 4px 4px 1px $pink_06, 5px 5px 1px $pink_06,
+      6px 6px 1px $pink_06, 7px 7px 1px $pink_06, 8px 8px 1px $pink_06,
+      25px 25px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .page {
+    margin: 24px 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: $black_12;
+  }
+}

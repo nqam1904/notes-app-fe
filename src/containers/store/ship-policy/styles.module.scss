@@ -1,0 +1,73 @@
+@import "/public/css/variables.module.scss";
+
+.container {
+  width: 100%;
+  height: auto;
+  margin-top: 140px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 140px;
+
+  h1 {
+    font-size: 28px;
+    font-weight: bold;
+    border-bottom: 1px solid $black_06;
+    padding-bottom: 10px;
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 20px;
+  }
+
+  p {
+    font-size: 14px;
+    margin: 10px 0;
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+    font-size: 14px;
+  }
+
+  th {
+    background: #f4f4f4;
+    font-weight: bold;
+  }
+
+  tr:nth-child(even) {
+    background: #fafafa;
+  }
+
+  .note {
+    margin-top: 16px;
+    font-size: 16px;
+    font-style: italic;
+  }
+
+  @media (max-width: 768px) {
+    body {
+      margin: 20px;
+    }
+    table {
+      font-size: 14px;
+    }
+  }
+}

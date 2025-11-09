@@ -1,0 +1,31 @@
+@import "/public/css/variables.module.scss";
+
+.button {
+  display: flex; // Enables flexbox
+  align-items: center; // Centers text vertically
+  justify-content: center; // Centers text horizontally
+  height: 48px; // Adjust height as needed
+  min-width: 64px;
+  color: $white;
+  transition: background-color 0.3s;
+  user-select: none;
+  text-align: center; // Ensures text is centered inside button
+  padding: 5px 24px;
+  background-color: #61549e;
+  font-size: 18px;
+  font-weight: 500;
+  text-align: center;
+  border-radius: 50px;
+  border: 0;
+  &:hover {
+    background-color: $pink_06;
+    cursor: pointer;
+  }
+  &:active {
+    background-color: $pink_06;
+  }
+  &:disabled {
+    cursor: default;
+    background-color: nth($color-light, 3);
+  }
+}

@@ -1,0 +1,63 @@
+@import "/public/css/variables.module.scss";
+
+.container {
+  width: 100%;
+  height: auto;
+  margin-top: 140px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 140px;
+
+  h1 {
+    font-size: 28px;
+    font-weight: bold;
+    border-bottom: 1px solid $black_06;
+    padding-bottom: 10px;
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 20px;
+  }
+
+  p {
+    margin: 10px 0;
+    font-size: 16px;
+  }
+
+  ul {
+    margin: 10px 0 10px 20px;
+    padding-left: 20px;
+    font-size: 16px;
+  }
+
+  ul li {
+    margin-bottom: 8px;
+    font-size: 16px;
+  }
+
+  .highlight {
+    font-weight: bold;
+    color: #d9534f;
+    font-size: 16px;
+  }
+
+  .note {
+    font-style: italic;
+    font-size: 14px;
+    margin-top: 15px;
+  }
+
+  @media (max-width: 768px) {
+    body {
+      margin: 20px;
+    }
+  }
+}

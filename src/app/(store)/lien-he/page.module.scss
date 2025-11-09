@@ -1,0 +1,103 @@
+@import "/public/css/variables.module.scss";
+
+.container {
+  width: 100%;
+  height: auto;
+  margin-top: 100px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 100px;
+  h1 {
+    font-size: 28px;
+    font-weight: bold;
+    border-bottom: 1px solid $black_06;
+    padding-bottom: 10px;
+  }
+  .form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    .warperForm {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      justify-content: space-between;
+      align-self: flex-start;
+      width: 50%;
+
+      div {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        .inputGroup {
+          display: flex;
+          gap: 10px;
+        }
+
+        .inputGroup > input,
+        > textarea {
+          width: 100%;
+          padding: 12px;
+          border: 2px solid #4c3c8c;
+          border-radius: 8px;
+          font-size: 14px;
+          outline: none;
+          flex: 1;
+          resize: none;
+          &:focus,
+          &:not(:placeholder-shown) {
+            border-color: $primary;
+          }
+
+          &:focus + label,
+          &:not(:placeholder-shown) + label {
+            top: 0;
+            color: $primary;
+          }
+        }
+        .warperButton {
+          align-self: flex-end;
+          > button {
+            padding: 8px 30px;
+            width: 200px;
+            font-size: 22px;
+            margin: 0 auto;
+          }
+        }
+      }
+    }
+    .mapResponsive {
+      overflow: hidden;
+      padding-bottom: 400px;
+      position: relative;
+      border: 0;
+      border-radius: 12px;
+      width: 500px;
+      height: 200px;
+      max-width: 100%;
+      iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+}
+@media (max-width: 768px) {
+  .container {
+    margin-bottom: 50px;
+    .form {
+      flex-direction: column;
+      .warperForm {
+        width: 100%;
+      }
+      .mapResponsive {
+        margin: 40px auto;
+        width: 100%;
+      }
+    }
+  }
+}
