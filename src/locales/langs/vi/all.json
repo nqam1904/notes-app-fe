@@ -89,5 +89,12 @@
   "mobile.menu": "Menu",
   "mobile.back": "Quay Lại",
   "mobile.done": "Xong",
-  "mobile.edit": "Sửa"
+  "mobile.edit": "Sửa",
+  
+  "anonymous.header.tagline": "Lưu ghi chú của bạn - Bảo mật ghi chú của bạn",
+  "anonymous.button.newNote": "Ghi chú mới",
+  "anonymous.button.shareUrl": "Chia sẻ Url",
+  "anonymous.button.changeUrl": "Thay đổi Url",
+  "anonymous.button.addPassword": "Thêm mật khẩu",
+  "anonymous.warning.deletion": "*Ghi chú của bạn sẽ bị xóa sau 20 ngày nếu không đặt mật khẩu"
 }

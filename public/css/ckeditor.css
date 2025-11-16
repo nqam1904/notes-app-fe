@@ -80,7 +80,7 @@
     --ck-focus-ring: 1px solid var(--ck-color-focus-border);
     --ck-font-size-base: 13px;
     --ck-line-height-base: 1.84615;
-    --ck-font-face: Helvetica, Arial, Tahoma, Verdana, Sans-Serif;
+    --ck-font-face: Roboto, Arial, Tahoma, Verdana, Sans-Serif;
     --ck-font-size-tiny: 0.7em;
     --ck-font-size-small: 0.75em;
     --ck-font-size-normal: 1em;
@@ -5809,7 +5809,7 @@ span.ck-widget.html-object-embed {
     box-shadow: 2px 2px 1px rgba(0, 0, 0, .15);
     color: #333;
     display: block;
-    font-family: Helvetica, Arial, Tahoma, Verdana, Sans-Serif;
+    font-family: Roboto, Arial, Tahoma, Verdana, Sans-Serif;
     font-size: .75em;
     font-weight: 700;
     padding: .3em .6em;

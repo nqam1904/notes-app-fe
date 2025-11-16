@@ -1,83 +1,102 @@
-import './globals.scss';
+import './globals.css';
+import 'antd/dist/reset.css';
+
+import type { Metadata, Viewport } from 'next';
+import localFont from 'next/font/local';
 
 import { CONFIG } from '@/config-global';
 import { detectLanguage } from '@/locales/server';
-import type { Metadata, Viewport } from 'next';
-import localFont from 'next/font/local';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { I18nProvider } from '@/locales';
-import ProgressBar from '@/components/UI/progress-bar';
-import { Provider } from 'react-redux';
-import store from '@/store';
+import ClientProviders from '@/components/providers/ClientProviders';
 
-const interFont = localFont({
+// ----------------------------------------------------------------------
+// Font Configuration
+// ----------------------------------------------------------------------
+
+const robotoFont = localFont({
   src: [
     {
-      path: '../../public/fonts/Raleway-Regular.ttf',
+      path: '../../public/fonts/Roboto-Light.ttf',
+      weight: '300',
+      style: 'normal',
+    },
+    {
+      path: '../../public/fonts/Roboto-Regular.ttf',
       weight: '400',
       style: 'normal',
     },
     {
-      path: '../../public/fonts/Raleway-Bold.ttf',
+      path: '../../public/fonts/Roboto-Medium.ttf',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: '../../public/fonts/Roboto-Bold.ttf',
       weight: '700',
-      style: 'bold',
+      style: 'normal',
+    },
+    {
+      path: '../../public/fonts/Roboto-Black.ttf',
+      weight: '900',
+      style: 'normal',
     },
   ],
-  variable: '--font-inter',
+  variable: '--font-roboto',
+  display: 'swap',
 });
+
+// ----------------------------------------------------------------------
+// Metadata Configuration
+// ----------------------------------------------------------------------
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
+  themeColor: '#ffffff',
 };
 
 export const metadata: Metadata = {
-  title: 'Notes - Capture Your Thoughts',
-  description: 'A modern notes application to capture and organize your ideas',
+  title: {
+    default: 'FlickNote - Online',
+    template: '%s | FlickNote - Online',
+  },
+  description: 'A simple, convenient app for quickly capturing ideas and managing notes.',
+  keywords: ['notes', 'notepad', 'productivity', 'thoughts'],
+  authors: [{ name: '@NQAM' }],
+  creator: '@NQAM',
   icons: {
     icon: [
-      { url: '/favicon-96x96.png', type: 'image/png', sizes: '96x96' },
-      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/android-chrome-192x192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/android-chrome-512x512.png', type: 'image/png', sizes: '512x512' },
+      { url: '/favicon.ico', sizes: 'any' },
     ],
     shortcut: '/favicon.ico',
-    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
   },
   manifest: '/site.webmanifest',
+  other: {
+    'mobile-web-app-capable': 'yes',
+  },
 };
 
-export default async function RootLayout({
-  children,
-}: {
+// ----------------------------------------------------------------------
+// Root Layout Component
+// ----------------------------------------------------------------------
+
+interface RootLayoutProps {
   children: React.ReactNode;
-}) {
+}
+
+export default async function RootLayout({ children }: RootLayoutProps) {
   const lang = CONFIG.isStaticExport ? 'en' : await detectLanguage();
+  const fontVariable = robotoFont.variable;
 
   return (
-    <html lang={lang} suppressHydrationWarning className={`${interFont.variable}`}>
-      <head>
-        <meta name="theme-color" content="#ffffff" />
-      </head>
+    <html lang={lang} suppressHydrationWarning className={fontVariable}>
       <body>
-        <Provider store={store}>
-          <I18nProvider lang={CONFIG.isStaticExport ? undefined : lang}>
-            <ProgressBar />
-            <ToastContainer
-              position="bottom-right"
-              autoClose={3000}
-              hideProgressBar={false}
-              newestOnTop
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="light"
-            />
-            {children}
-          </I18nProvider>
-        </Provider>
+        <ClientProviders lang={CONFIG.isStaticExport ? undefined : lang}>
+          {children}
+        </ClientProviders>
       </body>
     </html>
   );

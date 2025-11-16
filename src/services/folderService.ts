@@ -12,13 +12,22 @@ import { Folder } from '@/types/Data';
 
 const FOLDERS_PATH = 'folders';
 
+// Helper function to ensure database is available
+const ensureDatabase = () => {
+  if (!database) {
+    throw new Error('Firebase database is not initialized. Please check your Firebase configuration.');
+  }
+  return database;
+};
+
 export const folderService = {
   /**
    * Create a new folder
    */
   async createFolder(userId: string, folderData: Omit<Folder, 'id'>): Promise<Folder> {
     try {
-      const foldersRef = ref(database, `${FOLDERS_PATH}/${userId}`);
+      const db = ensureDatabase();
+      const foldersRef = ref(db, `${FOLDERS_PATH}/${userId}`);
       const newFolderRef = push(foldersRef);
 
       const folder: Folder = {
@@ -39,7 +48,8 @@ export const folderService = {
    */
   async getFolders(userId: string): Promise<Folder[]> {
     try {
-      const foldersRef = ref(database, `${FOLDERS_PATH}/${userId}`);
+      const db = ensureDatabase();
+      const foldersRef = ref(db, `${FOLDERS_PATH}/${userId}`);
       const snapshot = await get(foldersRef);
 
       if (!snapshot.exists()) {
@@ -63,7 +73,8 @@ export const folderService = {
    */
   async getFolder(userId: string, folderId: string): Promise<Folder | null> {
     try {
-      const folderRef = ref(database, `${FOLDERS_PATH}/${userId}/${folderId}`);
+      const db = ensureDatabase();
+      const folderRef = ref(db, `${FOLDERS_PATH}/${userId}/${folderId}`);
       const snapshot = await get(folderRef);
 
       if (!snapshot.exists()) {
@@ -82,7 +93,8 @@ export const folderService = {
    */
   async updateFolder(userId: string, folderId: string, updates: Partial<Folder>): Promise<void> {
     try {
-      const folderRef = ref(database, `${FOLDERS_PATH}/${userId}/${folderId}`);
+      const db = ensureDatabase();
+      const folderRef = ref(db, `${FOLDERS_PATH}/${userId}/${folderId}`);
       await update(folderRef, {
         ...updates,
         updatedAt: Date.now(),
@@ -98,7 +110,8 @@ export const folderService = {
    */
   async deleteFolder(userId: string, folderId: string): Promise<void> {
     try {
-      const folderRef = ref(database, `${FOLDERS_PATH}/${userId}/${folderId}`);
+      const db = ensureDatabase();
+      const folderRef = ref(db, `${FOLDERS_PATH}/${userId}/${folderId}`);
       await remove(folderRef);
     } catch (error) {
       console.error('Error deleting folder:', error);
@@ -111,7 +124,8 @@ export const folderService = {
    */
   subscribeToFolders(userId: string, callback: (folders: Folder[]) => void): () => void {
     try {
-      const foldersRef = ref(database, `${FOLDERS_PATH}/${userId}`);
+      const db = ensureDatabase();
+      const foldersRef = ref(db, `${FOLDERS_PATH}/${userId}`);
 
       const unsubscribe = onValue(foldersRef, snapshot => {
         const folders: Folder[] = [];

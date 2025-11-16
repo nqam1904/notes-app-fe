@@ -1,0 +1,169 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* NProgress styles */
+#nprogress {
+  pointer-events: none;
+}
+
+#nprogress .bar {
+  background: #fbbf24;
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+}
+
+#nprogress .peg {
+  display: block;
+  position: absolute;
+  right: 0px;
+  width: 100px;
+  height: 100%;
+  box-shadow: 0 0 10px #fbbf24, 0 0 5px #fbbf24;
+  opacity: 1.0;
+  transform: rotate(3deg) translate(0px, -4px);
+}
+
+#nprogress .spinner {
+  display: block;
+  position: fixed;
+  z-index: 9999;
+  top: 15px;
+  right: 15px;
+}
+
+#nprogress .spinner-icon {
+  width: 18px;
+  height: 18px;
+  box-sizing: border-box;
+  border: solid 2px transparent;
+  border-top-color: #fbbf24;
+  border-left-color: #fbbf24;
+  border-radius: 50%;
+  animation: nprogress-spinner 400ms linear infinite;
+}
+
+.nprogress-custom-parent {
+  overflow: hidden;
+  position: relative;
+}
+
+.nprogress-custom-parent #nprogress .spinner,
+.nprogress-custom-parent #nprogress .bar {
+  position: absolute;
+}
+
+@keyframes nprogress-spinner {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@layer base {
+  * {
+    @apply m-0 p-0 box-border;
+  }
+
+  :root {
+    /* Light theme */
+    --color-bg-primary: 255 255 255;
+    --color-bg-secondary: 245 245 247;
+    --color-bg-tertiary: 239 239 239;
+    --color-text-primary: 0 0 0;
+    --color-text-secondary: 102 102 102;
+    --color-text-tertiary: 153 153 153;
+    --color-border: 229 229 231;
+  }
+
+  html[data-theme='dark'] {
+    /* Dark theme */
+    --color-bg-primary: 28 28 30;
+    --color-bg-secondary: 44 44 46;
+    --color-bg-tertiary: 58 58 60;
+    --color-text-primary: 255 255 255;
+    --color-text-secondary: 153 153 153;
+    --color-text-tertiary: 102 102 102;
+    --color-border: 66 66 69;
+  }
+
+  html {
+    @apply text-base antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html,
+  body {
+    @apply h-full;
+  }
+
+  body {
+    @apply font-sans text-base leading-normal;
+    color: rgb(var(--color-text-primary));
+    background-color: rgb(var(--color-bg-primary));
+    transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Typography */
+  h1 {
+    @apply text-[2rem] font-bold leading-tight;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold leading-snug;
+  }
+
+  h3 {
+    @apply text-xl font-semibold leading-snug;
+  }
+
+  h4 {
+    @apply text-lg font-semibold leading-normal;
+  }
+
+  h5 {
+    @apply text-base font-semibold leading-normal;
+  }
+
+  h6 {
+    @apply text-sm font-semibold leading-normal;
+  }
+
+  p {
+    @apply mb-md;
+  }
+
+  small {
+    @apply text-sm;
+    color: rgb(var(--color-text-secondary));
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full;
+    background: rgb(var(--color-border));
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--color-text-tertiary));
+  }
+}
+
+@layer utilities {
+  .sr-only {
+    @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap;
+    clip: rect(0, 0, 0, 0);
+    border-width: 0;
+  }
+}

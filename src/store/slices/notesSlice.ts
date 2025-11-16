@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Note, NoteFilter } from '@/types/Data';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Note, NoteFilter } from "@/types/Data";
 
 interface NotesState {
   notes: Note[];
@@ -18,11 +18,11 @@ const initialState: NotesState = {
   loading: false,
   error: null,
   filter: {},
-  searchQuery: '',
+  searchQuery: "",
 };
 
 const notesSlice = createSlice({
-  name: 'notes',
+  name: "notes",
   initialState,
   reducers: {
     setNotes: (state, action: PayloadAction<Note[]>) => {
@@ -33,18 +33,36 @@ const notesSlice = createSlice({
       state.notes.unshift(action.payload);
       state.filteredNotes.unshift(action.payload);
     },
-    updateNote: (state, action: PayloadAction<Note>) => {
-      const index = state.notes.findIndex(note => note.id === action.payload.id);
+    updateNote: (
+      state,
+      action: PayloadAction<{ id: string; changes: Partial<Note> }>
+    ) => {
+      const { id, changes } = action.payload;
+      const index = state.notes.findIndex((note) => note.id === id);
+
+      if (index !== -1) {
+        state.notes[index] = { ...state.notes[index], ...changes };
+        state.filteredNotes = state.filteredNotes.map((note) =>
+          note.id === id ? { ...note, ...changes } : note
+        );
+      }
+    },
+    updateFullNote: (state, action: PayloadAction<Note>) => {
+      const index = state.notes.findIndex(
+        (note) => note.id === action.payload.id
+      );
       if (index !== -1) {
         state.notes[index] = action.payload;
-        state.filteredNotes = state.filteredNotes.map(note =>
+        state.filteredNotes = state.filteredNotes.map((note) =>
           note.id === action.payload.id ? action.payload : note
         );
       }
     },
     deleteNote: (state, action: PayloadAction<string>) => {
-      state.notes = state.notes.filter(note => note.id !== action.payload);
-      state.filteredNotes = state.filteredNotes.filter(note => note.id !== action.payload);
+      state.notes = state.notes.filter((note) => note.id !== action.payload);
+      state.filteredNotes = state.filteredNotes.filter(
+        (note) => note.id !== action.payload
+      );
       if (state.selectedNoteId === action.payload) {
         state.selectedNoteId = null;
       }
@@ -79,28 +97,35 @@ function applyFilter(state: NotesState) {
   if (state.searchQuery) {
     const query = state.searchQuery.toLowerCase();
     filtered = filtered.filter(
-      note =>
+      (note) =>
         note.title.toLowerCase().includes(query) ||
         note.content.toLowerCase().includes(query) ||
-        (note.tags && note.tags.some(tag => tag.toLowerCase().includes(query)))
+        (note.tags &&
+          note.tags.some((tag) => tag.toLowerCase().includes(query)))
     );
   }
 
   // Apply filters
   if (state.filter.folderId) {
-    filtered = filtered.filter(note => note.folderId === state.filter.folderId);
+    filtered = filtered.filter(
+      (note) => note.folderId === state.filter.folderId
+    );
   }
   if (state.filter.status) {
-    filtered = filtered.filter(note => note.status === state.filter.status);
+    filtered = filtered.filter((note) => note.status === state.filter.status);
   }
   if (state.filter.color) {
-    filtered = filtered.filter(note => note.color === state.filter.color);
+    filtered = filtered.filter((note) => note.color === state.filter.color);
   }
   if (state.filter.isPinned !== undefined) {
-    filtered = filtered.filter(note => note.isPinned === state.filter.isPinned);
+    filtered = filtered.filter(
+      (note) => note.isPinned === state.filter.isPinned
+    );
   }
   if (state.filter.isLocked !== undefined) {
-    filtered = filtered.filter(note => note.isLocked === state.filter.isLocked);
+    filtered = filtered.filter(
+      (note) => note.isLocked === state.filter.isLocked
+    );
   }
 
   state.filteredNotes = filtered;
@@ -110,6 +135,7 @@ export const {
   setNotes,
   addNote,
   updateNote,
+  updateFullNote,
   deleteNote,
   setSelectedNote,
   setLoading,
@@ -120,4 +146,3 @@ export const {
 } = notesSlice.actions;
 
 export default notesSlice.reducer;
-

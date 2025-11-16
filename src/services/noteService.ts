@@ -15,13 +15,22 @@ import { Note, NoteStatus } from '@/types/Data';
 
 const NOTES_PATH = 'notes';
 
+// Helper function to ensure database is available
+const ensureDatabase = () => {
+  if (!database) {
+    throw new Error('Firebase database is not initialized. Please check your Firebase configuration.');
+  }
+  return database;
+};
+
 export const noteService = {
   /**
    * Create a new note
    */
   async createNote(userId: string, noteData: Omit<Note, 'id'>): Promise<Note> {
     try {
-      const notesRef = ref(database, `${NOTES_PATH}/${userId}`);
+      const db = ensureDatabase();
+      const notesRef = ref(db, `${NOTES_PATH}/${userId}`);
       const newNoteRef = push(notesRef);
       
       const note: Note = {
@@ -42,7 +51,8 @@ export const noteService = {
    */
   async getNotes(userId: string): Promise<Note[]> {
     try {
-      const notesRef = ref(database, `${NOTES_PATH}/${userId}`);
+      const db = ensureDatabase();
+      const notesRef = ref(db, `${NOTES_PATH}/${userId}`);
       const snapshot = await get(notesRef);
 
       if (!snapshot.exists()) {
@@ -66,7 +76,8 @@ export const noteService = {
    */
   async getNote(userId: string, noteId: string): Promise<Note | null> {
     try {
-      const noteRef = ref(database, `${NOTES_PATH}/${userId}/${noteId}`);
+      const db = ensureDatabase();
+      const noteRef = ref(db, `${NOTES_PATH}/${userId}/${noteId}`);
       const snapshot = await get(noteRef);
 
       if (!snapshot.exists()) {
@@ -85,7 +96,8 @@ export const noteService = {
    */
   async updateNote(userId: string, noteId: string, updates: Partial<Note>): Promise<void> {
     try {
-      const noteRef = ref(database, `${NOTES_PATH}/${userId}/${noteId}`);
+      const db = ensureDatabase();
+      const noteRef = ref(db, `${NOTES_PATH}/${userId}/${noteId}`);
       await update(noteRef, {
         ...updates,
         updatedAt: Date.now(),
@@ -101,7 +113,8 @@ export const noteService = {
    */
   async deleteNote(userId: string, noteId: string): Promise<void> {
     try {
-      const noteRef = ref(database, `${NOTES_PATH}/${userId}/${noteId}`);
+      const db = ensureDatabase();
+      const noteRef = ref(db, `${NOTES_PATH}/${userId}/${noteId}`);
       await remove(noteRef);
     } catch (error) {
       console.error('Error deleting note:', error);
@@ -114,7 +127,8 @@ export const noteService = {
    */
   async getNotesByStatus(userId: string, status: NoteStatus): Promise<Note[]> {
     try {
-      const notesRef = ref(database, `${NOTES_PATH}/${userId}`);
+      const db = ensureDatabase();
+      const notesRef = ref(db, `${NOTES_PATH}/${userId}`);
       const notesQuery = query(notesRef, orderByChild('status'), equalTo(status));
       const snapshot = await get(notesQuery);
 
@@ -139,7 +153,8 @@ export const noteService = {
    */
   subscribeToNotes(userId: string, callback: (notes: Note[]) => void): () => void {
     try {
-      const notesRef = ref(database, `${NOTES_PATH}/${userId}`);
+      const db = ensureDatabase();
+      const notesRef = ref(db, `${NOTES_PATH}/${userId}`);
 
       const unsubscribe = onValue(notesRef, snapshot => {
         const notes: Note[] = [];
@@ -163,7 +178,8 @@ export const noteService = {
    */
   subscribeToNote(userId: string, noteId: string, callback: (note: Note | null) => void): () => void {
     try {
-      const noteRef = ref(database, `${NOTES_PATH}/${userId}/${noteId}`);
+      const db = ensureDatabase();
+      const noteRef = ref(db, `${NOTES_PATH}/${userId}/${noteId}`);
 
       const unsubscribe = onValue(noteRef, snapshot => {
         if (snapshot.exists()) {

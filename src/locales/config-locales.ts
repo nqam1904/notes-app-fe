@@ -4,7 +4,7 @@ export type LanguageValue = "vi" | "en";
 
 export const fallbackLng = "vi";
 export const languages = ["vi", "en"];
-export const defaultNS = "common";
+export const defaultNS = "all";
 export const cookieName = "i18next";
 
 // ----------------------------------------------------------------------

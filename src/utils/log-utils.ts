@@ -1,9 +1,10 @@
 import { format } from "date-fns";
+
 const logResponse = (
   level: "info" | "warn" | "error",
   actionName: string,
   startTime: number,
-  response: any,
+  response: any
 ) => {
   const endTime = Date.now();
   const duration = endTime - startTime + "ms";
@@ -17,7 +18,7 @@ const logAction = (
   actionName: string,
   startTime: number,
   message?: string,
-  payload?: any,
+  payload?: any
 ) => {
   const endTime = Date.now();
   const duration = endTime - startTime + "ms";
@@ -33,7 +34,7 @@ const logAction = (
   }
 };
 
-const withLogging = (actionName: string, action: Function) => {
+const appLogger = (actionName: string, action: Function) => {
   return async (...args: any[]) => {
     const start = Date.now();
     try {
@@ -47,7 +48,6 @@ const withLogging = (actionName: string, action: Function) => {
   };
 };
 
-
 // TRACKING ERROR IN PRODUCTION
 const logError = (error: any, functionName: string) => {
   const date = format(new Date(), "dd/MM/yyyy HH:mm:ss");
@@ -55,7 +55,7 @@ const logError = (error: any, functionName: string) => {
   console.error(`Stack trace: ${error.stack}`);
 };
 
-const handleError = async (
+const errorLogger = async (
   fn: Function,
   functionName: string,
   ...args: any[]
@@ -68,4 +68,4 @@ const handleError = async (
   }
 };
 
-export { logAction, logResponse, withLogging, handleError };
+export { logAction, logResponse, appLogger, errorLogger };

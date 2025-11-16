@@ -1,9 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User, UserPreferences } from '@/types/Data';
+import { localStorageService } from '@/services/localStorageService';
 
 interface UserState {
   user: User | null;
   isAuthenticated: boolean;
+  isAnonymous: boolean;
+  anonymousUserId: string | null;
   loading: boolean;
   error: string | null;
   preferences: UserPreferences;
@@ -12,6 +15,8 @@ interface UserState {
 const initialState: UserState = {
   user: null,
   isAuthenticated: false,
+  isAnonymous: false,
+  anonymousUserId: null,
   loading: false,
   error: null,
   preferences: {
@@ -30,6 +35,15 @@ const userSlice = createSlice({
     setUser: (state, action: PayloadAction<User | null>) => {
       state.user = action.payload;
       state.isAuthenticated = !!action.payload;
+      state.isAnonymous = false;
+      state.anonymousUserId = null;
+    },
+    setAnonymousUser: (state) => {
+      const anonymousUserId = localStorageService.getAnonymousUserId();
+      state.anonymousUserId = anonymousUserId;
+      state.isAnonymous = true;
+      state.isAuthenticated = false;
+      state.user = null;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
@@ -54,6 +68,8 @@ const userSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.isAuthenticated = false;
+      state.isAnonymous = false;
+      state.anonymousUserId = null;
       state.preferences = initialState.preferences;
     },
     clearError: (state) => {
@@ -64,6 +80,7 @@ const userSlice = createSlice({
 
 export const {
   setUser,
+  setAnonymousUser,
   setLoading,
   setError,
   setPreferences,

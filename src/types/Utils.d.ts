@@ -1,5 +1,4 @@
-export type ApiFakeResponse = {
-  status: "success" | "error";
-  data: any;
-  message?: string;
-};
+// Utility types for the Notes app
+// Currently no utility types needed
+
+export {};

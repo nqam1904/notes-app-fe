@@ -1,7 +1,7 @@
-import { initializeApp, getApp, getApps } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getDatabase } from 'firebase/database';
-import { getStorage } from 'firebase/storage';
+import { initializeApp, getApp, getApps, FirebaseApp } from 'firebase/app';
+import { getAuth, Auth } from 'firebase/auth';
+import { getDatabase, Database } from 'firebase/database';
+import { getStorage, FirebaseStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
@@ -13,13 +13,31 @@ const firebaseConfig = {
   databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL || '',
 };
 
-// Initialize Firebase
-const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+// Check if we have valid Firebase config
+const hasValidConfig = () => {
+  return !!(
+    firebaseConfig.apiKey &&
+    firebaseConfig.authDomain &&
+    firebaseConfig.projectId &&
+    firebaseConfig.appId
+  );
+};
 
-// Get Firebase services
-export const auth = getAuth(app);
-export const database = getDatabase(app);
-export const storage = getStorage(app);
+// Only initialize Firebase on client-side with valid config
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let database: Database | null = null;
+let storage: FirebaseStorage | null = null;
 
+if (typeof window !== 'undefined' && hasValidConfig()) {
+  // Initialize Firebase only in browser with valid config
+  app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  database = getDatabase(app);
+  storage = getStorage(app);
+}
+
+// Export services (will be null on server or without valid config)
+export { auth, database, storage };
 export default app;
 

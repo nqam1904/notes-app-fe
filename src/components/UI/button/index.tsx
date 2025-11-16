@@ -1,5 +1,7 @@
 "use client";
-import styles from "./button.module.scss";
+
+import { Button as AntButton } from 'antd';
+import type { ButtonProps as AntButtonProps } from 'antd';
 
 interface IProps {
   text?: string;
@@ -21,15 +23,15 @@ const Button: React.FC<IProps> = ({
   className = "",
 }) => {
   return (
-    <button
+    <AntButton
+      htmlType={type}
       disabled={disabled}
-      type={type}
-      className={`${styles.button} ${className}`}
       onClick={onClick}
-      style={{ backgroundColor, borderColor }}
+      className={`flex items-center justify-center h-12 min-w-[64px] text-white transition-colors duration-300 select-none text-center px-6 py-[5px] bg-text-title text-lg font-medium rounded-[50px] border-0 hover:bg-pink-6 hover:cursor-pointer active:bg-pink-6 disabled:cursor-default disabled:bg-gray-300 ${className}`}
+      style={{ backgroundColor: backgroundColor || undefined, borderColor: borderColor || undefined }}
     >
       {text}
-    </button>
+    </AntButton>
   );
 };
 

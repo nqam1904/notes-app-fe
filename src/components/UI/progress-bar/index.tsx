@@ -13,7 +13,13 @@ type PushStateInput = [
 
 const ProgressBar = () => {
   useEffect(() => {
-    NProgress.configure({ showSpinner: false });
+    NProgress.configure({ 
+      showSpinner: true,
+      minimum: 0.1,
+      easing: 'ease',
+      speed: 500,
+      trickleSpeed: 200
+    });
 
     const handleAnchorClick = (event: MouseEvent) => {
       const targetUrl = (event.currentTarget as HTMLAnchorElement).href;

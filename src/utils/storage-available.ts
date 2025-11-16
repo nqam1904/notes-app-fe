@@ -23,16 +23,16 @@ export function localStorageAvailable(): boolean {
 export function localStorageGetItem<T = string>(
   key: string,
   defaultValue?: T
-): T | string | null {
+): T | string | undefined {
   if (!localStorageAvailable()) {
-    return defaultValue ?? null;
+    return defaultValue;
   }
 
   try {
     const item = window.localStorage.getItem(key);
 
     if (item === null) {
-      return defaultValue ?? null;
+      return defaultValue;
     }
 
     // Try to parse as JSON if it's a valid JSON string
@@ -44,7 +44,7 @@ export function localStorageGetItem<T = string>(
     }
   } catch (error) {
     console.error(`Error getting item from localStorage: ${key}`, error);
-    return defaultValue ?? null;
+    return defaultValue;
   }
 }
 
