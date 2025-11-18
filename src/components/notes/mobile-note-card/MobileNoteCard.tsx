@@ -12,7 +12,7 @@ interface MobileNoteCardProps {
 }
 
 export default function MobileNoteCard({ note, onClick }: MobileNoteCardProps) {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const locale = i18n.language === 'vi' ? vi : enUS;
 
   const timeAgo = formatDistanceToNow(new Date(note.updatedAt), {
@@ -20,13 +20,13 @@ export default function MobileNoteCard({ note, onClick }: MobileNoteCardProps) {
     locale,
   });
 
-  const title = note.title || 'Untitled';
+  const title = note.title || t('note.untitled');
   const preview = note.content.substring(0, 80).replace(/<[^>]*>/g, '');
 
   return (
     <div
       className="hidden flex-col p-lg rounded-lg cursor-pointer transition-all duration-base shadow-md min-h-[140px] relative overflow-hidden max-[480px]:flex before:content-[''] before:absolute before:inset-0 before:bg-white/10 before:pointer-events-none active:scale-[0.98] active:shadow-lg"
-      style={{ backgroundColor: `var(--color-note-${note.color})` }}
+      style={{ backgroundColor: `var(--color-note-default)` }}
       onClick={onClick}
     >
       <div className="relative z-10 flex flex-col gap-md h-full">

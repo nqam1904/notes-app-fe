@@ -5,25 +5,30 @@ import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import ROUTES from '@/routes/path';
 import { RootState } from '@/store';
-import AnonymousNotesLayout from '@/components/notes/notes-container/AnonymousNotesLayout';
+import { useAppInitialization } from '@/hooks/useAppInitialization';
 
 export default function HomePage() {
   const router = useRouter();
-  const { isAuthenticated } = useSelector((state: RootState) => state.user);
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.user);
 
-  // If the user is authenticated, send them straight into the full notes UI
+  // Step 1: Initialize app - Always set up anonymous user first
+  // This ensures users can start using the app immediately
+  useAppInitialization();
+
+  // Step 2: Route users based on authentication status
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && user) {
+      // User is logged in - redirect to authenticated dashboard
+      console.log('[HomePage] User authenticated, redirecting to dashboard:', user.id);
+      router.replace(ROUTES.NOTES);
+    } else {
+      // Anonymous user - redirect to notes page with anonymous mode
+      console.log('[HomePage] Anonymous user, redirecting to notes page');
       router.replace(ROUTES.NOTES);
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, user, router]);
 
-  // Anonymous (or not yet authenticated) users see the simple notepad UI
-  if (!isAuthenticated) {
-    return <AnonymousNotesLayout />;
-  }
-
-  // While redirecting for authenticated users, render nothing
+  // Next.js loading.tsx will handle the loading UI
   return null;
 }
 

@@ -12,18 +12,42 @@ export const generateId = (): string => {
 };
 
 /**
- * Generate a unique note ID
- * Format: note_timestamp_random
- * Example: note_1699123456789_a4b9c2d7
+ * Generate a short random ID with mixed case
+ * Format: 9 characters starting with uppercase letter
+ * Example: Tkf4N3Q71
  */
-export const generateNoteId = (): string => {
-  return `note_${generateId()}`;
+const generateShortMixedId = (): string => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  
+  // First character must be uppercase letter
+  const upperChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  result += upperChars.charAt(Math.floor(Math.random() * upperChars.length));
+  
+  // Generate remaining 8 characters
+  for (let i = 0; i < 8; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  
+  return result;
+};
+
+/**
+ * Generate a unique note ID
+ * Format: Short mixed case ID or anon_ prefix for anonymous users
+ * Examples: 
+ * - Authenticated: "Tkf4N3Q71"
+ * - Anonymous: "anon_Tkf4N3Q71"
+ */
+export const generateNoteId = (isAnonymous: boolean = false): string => {
+  const shortId = generateShortMixedId();
+  return isAnonymous ? `anon_${shortId}` : shortId;
 };
 
 /**
  * Generate a unique user ID for anonymous users
- * Format: anon_timestamp_random
- * Example: anon_1699123456789_a4b9c2d7
+ * Format: anon_random
+ * Example: anon_a4b9c2d7
  */
 export const generateAnonymousUserId = (): string => {
   return `anon_${generateId()}`;
@@ -31,11 +55,11 @@ export const generateAnonymousUserId = (): string => {
 
 /**
  * Generate a unique folder ID
- * Format: folder_timestamp_random
- * Example: folder_1699123456789_a4b9c2d7
+ * Format: folder_random
+ * Example: folder_a4b9c2d7
  */
 export const generateFolderId = (): string => {
-  return `folder_${Date.now()}_${generateId()}`;
+  return `folder_${generateId()}`;
 };
 
 /**
@@ -60,9 +84,20 @@ export const generateUUID = (): string => {
 
 /**
  * Check if an ID is a valid note ID format
+ * Supports both formats:
+ * - Short format: "Tkf4N3Q71" (9 chars, starts with uppercase)
+ * - Anonymous format: "anon_Tkf4N3Q71"
+ * - Legacy format: "1699123456789_a4b9c2d7" (for backward compatibility)
  */
 export const isValidNoteId = (id: string): boolean => {
-  return /^note_\d+_[a-z0-9]+$/.test(id);
+  // New short format: uppercase letter + 8 alphanumeric chars
+  const shortFormat = /^[A-Z][A-Za-z0-9]{8}$/;
+  // Anonymous format: anon_ + short format
+  const anonymousFormat = /^anon_[A-Z][A-Za-z0-9]{8}$/;
+  // Legacy format: timestamp_random
+  const legacyFormat = /^[0-9]+_[a-z0-9]+$/;
+  
+  return shortFormat.test(id) || anonymousFormat.test(id) || legacyFormat.test(id);
 };
 
 /**
@@ -70,4 +105,11 @@ export const isValidNoteId = (id: string): boolean => {
  */
 export const isAnonymousUser = (userId: string): boolean => {
   return userId.startsWith("anon_");
+};
+
+/**
+ * Check if a note ID is from an anonymous user
+ */
+export const isAnonymousNote = (noteId: string): boolean => {
+  return noteId.startsWith("anon_");
 };

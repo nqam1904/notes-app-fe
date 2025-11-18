@@ -17,6 +17,8 @@ import {
   PlusOutlined,
   UserOutlined,
 } from '@ant-design/icons';
+import { generateNoteId } from '@/utils/idGenerator';
+import ROUTES from '@/routes/path';
 
 const { Title, Text } = Typography;
 
@@ -30,7 +32,7 @@ interface SidebarItem {
 export default function NotesSidebar() {
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
-  const { user } = useSelector((state: RootState) => state.user);
+  const { user, isAuthenticated } = useSelector((state: RootState) => state.user);
   const { folders } = useSelector((state: RootState) => state.folders);
   const [isOpen, setIsOpen] = useState(true);
 
@@ -59,6 +61,14 @@ export default function NotesSidebar() {
     setIsOpen(!isOpen);
   };
 
+  const handleCreateNewNote = () => {
+    // Generate new note ID with appropriate prefix
+    const newNoteId = generateNoteId(!isAuthenticated);
+    const targetRoute = ROUTES.NOTES_ANONYMOUS.replace(':id', newNoteId);
+    console.log('[NotesSidebar] Creating new note:', newNoteId);
+    window.open(targetRoute, '_blank');
+  };
+
   return (
     <>
       <Button 
@@ -78,6 +88,7 @@ export default function NotesSidebar() {
             icon={<PlusOutlined />}
             className="flex items-center justify-center w-8 h-8 rounded-md bg-accent text-white border-none hover:bg-accent-hover hover:scale-105 active:scale-95"
             title={t('note.new')}
+            onClick={handleCreateNewNote}
           />
         </div>
 

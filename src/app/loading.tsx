@@ -1,6 +1,6 @@
+import { SplashScreen } from "@/components/splash-screen/SplashScreen";
+
 export default function Loading() {
-  // Return null because NProgress will handle the loading indicator
-  // This prevents double loading indicators
-  return null;
+  return <SplashScreen />;
 }
 

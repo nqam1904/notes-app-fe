@@ -265,7 +265,6 @@ export async function changeNoteColorAction(
     }
 
     await noteService.updateNote(userId, noteId, {
-      color: color as any,
       updatedAt: Date.now(),
     });
     return { success: true };

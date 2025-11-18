@@ -1,11 +1,13 @@
 import { Note } from '@/types/Data';
 import { generateNoteId as generateId } from './idGenerator';
+import { NOTE_EXPIRATION_MS, NOTE_EXPIRATION_DAYS } from '@/constants/constants';
 
 /**
  * Generate a unique ID for a note
+ * @param isAnonymous - Whether the note is for an anonymous user
  */
-export const generateNoteId = (): string => {
-  return generateId();
+export const generateNoteId = (isAnonymous: boolean = false): string => {
+  return generateId(isAnonymous);
 };
 
 /**
@@ -175,6 +177,61 @@ export const getReadingTime = (content: string): number => {
   const wordCount = getWordCount(content);
   const wordsPerMinute = 200; // Average reading speed
   return Math.max(1, Math.ceil(wordCount / wordsPerMinute));
+};
+
+/**
+ * Check if note is expired (older than 20 days without password)
+ */
+export const isNoteExpired = (note: Note): boolean => {
+  if (note.isLocked) return false; // Notes with password never expire
+  const noteAge = Date.now() - note.createdAt;
+  return noteAge > NOTE_EXPIRATION_MS;
+};
+
+/**
+ * Get remaining days before note expires (returns 0 if expired or has password)
+ */
+export const getRemainingDays = (note: Note): number => {
+  if (note.isLocked) return -1; // -1 indicates note has password (won't expire)
+  const noteAge = Date.now() - note.createdAt;
+  const remainingMs = NOTE_EXPIRATION_MS - noteAge;
+  if (remainingMs <= 0) return 0;
+  return Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
+};
+
+/**
+ * Get note age in days
+ */
+export const getNoteAgeInDays = (note: Note): number => {
+  const noteAge = Date.now() - note.createdAt;
+  return Math.floor(noteAge / (24 * 60 * 60 * 1000));
+};
+
+/**
+ * Get expiration info for display
+ */
+export const getExpirationInfo = (note: Note): {
+  isExpired: boolean;
+  hasPassword: boolean;
+  remainingDays: number;
+  ageInDays: number;
+  expirationDate: Date | null;
+} => {
+  const hasPassword = note.isLocked;
+  const ageInDays = getNoteAgeInDays(note);
+  const remainingDays = getRemainingDays(note);
+  const isExpired = isNoteExpired(note);
+  const expirationDate = hasPassword 
+    ? null 
+    : new Date(note.createdAt + NOTE_EXPIRATION_MS);
+
+  return {
+    isExpired,
+    hasPassword,
+    remainingDays,
+    ageInDays,
+    expirationDate,
+  };
 };
 
 

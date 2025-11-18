@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { User, UserPreferences } from '@/types/Data';
-import { localStorageService } from '@/services/localStorageService';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { User, UserPreferences } from "@/types/Data";
+import { localStorageService } from "@/services/localStorageService";
 
 interface UserState {
   user: User | null;
@@ -17,19 +17,19 @@ const initialState: UserState = {
   isAuthenticated: false,
   isAnonymous: false,
   anonymousUserId: null,
-  loading: false,
+  loading: true, // Start with loading true to prevent flash of wrong UI
   error: null,
   preferences: {
-    theme: 'system',
-    language: 'en',
-    fontSize: 'normal',
-    sortBy: 'date',
-    sortOrder: 'desc',
+    theme: "system",
+    language: "en",
+    fontSize: "normal",
+    sortBy: "date",
+    sortOrder: "desc",
   },
 };
 
 const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState,
   reducers: {
     setUser: (state, action: PayloadAction<User | null>) => {
@@ -37,6 +37,7 @@ const userSlice = createSlice({
       state.isAuthenticated = !!action.payload;
       state.isAnonymous = false;
       state.anonymousUserId = null;
+      state.loading = false; // Set loading to false after user is set
     },
     setAnonymousUser: (state) => {
       const anonymousUserId = localStorageService.getAnonymousUserId();
@@ -44,6 +45,7 @@ const userSlice = createSlice({
       state.isAnonymous = true;
       state.isAuthenticated = false;
       state.user = null;
+      state.loading = false; // Set loading to false after anonymous user is set
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
@@ -51,7 +53,10 @@ const userSlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
-    setPreferences: (state, action: PayloadAction<Partial<UserPreferences>>) => {
+    setPreferences: (
+      state,
+      action: PayloadAction<Partial<UserPreferences>>
+    ) => {
       state.preferences = {
         ...state.preferences,
         ...action.payload,
@@ -90,4 +95,3 @@ export const {
 } = userSlice.actions;
 
 export default userSlice.reducer;
-

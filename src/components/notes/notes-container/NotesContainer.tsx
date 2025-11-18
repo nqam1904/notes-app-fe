@@ -17,20 +17,20 @@ export default function NotesContainer({ children }: NotesContainerProps) {
   const { loading, isAnonymous, isAuthenticated } = useSelector(
     (state: RootState) => state.user
   );
-
   useEffect(() => {
     // Placeholder for future authenticated user initialization (e.g., Firebase Auth)
     // dispatch(setUser(fetchedUser));
   }, [dispatch]);
 
-  if (loading) {
+  // Show loading screen while determining user state OR if state is undetermined
+  if (loading || (!isAnonymous && !isAuthenticated)) {
     return (
       <div className="flex items-center justify-center w-full min-h-screen bg-[rgb(var(--color-bg-primary))]">
-        <div className="flex items-center gap-2" aria-label="Loading notes" role="status">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#4285f4] animate-[googleBounce_0.8s_ease-in-out_infinite_alternate]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#ea4335] animate-[googleBounce_0.8s_ease-in-out_infinite_alternate] [animation-delay:0.1s]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#fbbc05] animate-[googleBounce_0.8s_ease-in-out_infinite_alternate] [animation-delay:0.2s]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#34a853] animate-[googleBounce_0.8s_ease-in-out_infinite_alternate] [animation-delay:0.3s]" />
+        <div className="flex flex-col items-center gap-4" aria-label="Loading notes" role="status">
+          <div className="relative w-12 h-12">
+            <div className="absolute inset-0 border-4 border-[rgb(var(--color-border))] rounded-full opacity-20"></div>
+            <div className="absolute inset-0 border-4 border-[rgb(var(--color-accent))] rounded-full border-t-transparent animate-spin"></div>
+          </div>
         </div>
       </div>
     );

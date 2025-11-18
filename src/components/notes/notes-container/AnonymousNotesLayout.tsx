@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { Button, Typography, Layout as AntLayout } from 'antd';
+import { Typography, Layout as AntLayout } from 'antd';
 import {
   FileAddOutlined,
   ShareAltOutlined,
@@ -11,6 +11,9 @@ import {
 import { CONFIG } from '@/config-global';
 import { useTranslate } from '@/locales/use-locales';
 import LanguageSwitcher from '@/components/language-switcher';
+import AnonymousButton from './AnonymousButton';
+import { generateNoteId } from '@/utils/idGenerator';
+import ROUTES from '@/routes/path';
 
 const { Header } = AntLayout;
 const { Text } = Typography;
@@ -21,6 +24,14 @@ interface AnonymousNotesLayoutProps {
 
 export default function AnonymousNotesLayout({ children }: AnonymousNotesLayoutProps) {
   const { t } = useTranslate();
+
+  const handleCreateNewNote = () => {
+    // Generate new note ID for anonymous user (with anon_ prefix)
+    const newNoteId = generateNoteId(true);
+    const targetRoute = ROUTES.NOTES_ANONYMOUS.replace(':id', newNoteId);
+    console.log('[AnonymousNotesLayout] Creating new note:', newNoteId);
+    window.open(targetRoute, '_blank');
+  };
 
   return (
     <div className="min-h-screen bg-[#f9f5e7] flex flex-col">
@@ -39,42 +50,30 @@ export default function AnonymousNotesLayout({ children }: AnonymousNotesLayoutP
           {/* Buttons and warning row */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
             <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3">
-              <Button
-                type="primary"
-                icon={<FileAddOutlined />}
-                className="inline-flex items-center justify-center gap-1 sm:gap-2 bg-amber-400 hover:bg-amber-500 border-0 text-xs sm:text-sm"
-                style={{ backgroundColor: '#fbbf24', color: '#000' }}
-              >
-                <span className="hidden sm:inline">{t('anonymous.button.newNote')}</span>
-                <span className="sm:hidden">New</span>
-              </Button>
-              <Button
-                type="primary"
-                icon={<ShareAltOutlined />}
-                className="inline-flex items-center justify-center gap-1 sm:gap-2 bg-amber-400 hover:bg-amber-500 border-0 text-xs sm:text-sm"
-                style={{ backgroundColor: '#fbbf24', color: '#000' }}
-              >
-                <span className="hidden sm:inline">{t('anonymous.button.shareUrl')}</span>
-                <span className="sm:hidden">Share</span>
-              </Button>
-              <Button
-                type="primary"
-                icon={<LinkOutlined />}
-                className="inline-flex items-center justify-center gap-1 sm:gap-2 bg-amber-400 hover:bg-amber-500 border-0 text-xs sm:text-sm"
-                style={{ backgroundColor: '#fbbf24', color: '#000' }}
-              >
-                <span className="hidden sm:inline">{t('anonymous.button.changeUrl')}</span>
-                <span className="sm:hidden">URL</span>
-              </Button>
-              <Button
-                type="primary"
-                icon={<LockOutlined />}
-                className="inline-flex items-center justify-center gap-1 sm:gap-2 bg-amber-400 hover:bg-amber-500 border-0 text-xs sm:text-sm"
-                style={{ backgroundColor: '#fbbf24', color: '#000' }}
-              >
-                <span className="hidden sm:inline">{t('anonymous.button.addPassword')}</span>
-                <span className="sm:hidden">Lock</span>
-              </Button>
+              <AnonymousButton
+                icon={<FileAddOutlined style={{ fontSize: '16px', fontWeight: 'bold' }} />}
+                text={t('anonymous.button.newNote')}
+                shortText="New"
+                onClick={handleCreateNewNote}
+              />
+              <AnonymousButton
+                icon={<ShareAltOutlined style={{ fontSize: '16px', fontWeight: 'bold' }} />}
+                text={t('anonymous.button.shareUrl')}
+                shortText="Share"
+                disabled
+              />
+              <AnonymousButton
+                icon={<LinkOutlined style={{ fontSize: '16px', fontWeight: 'bold' }} />}
+                text={t('anonymous.button.changeUrl')}
+                shortText="URL"
+                disabled
+              />
+              <AnonymousButton
+                icon={<LockOutlined style={{ fontSize: '16px', fontWeight: 'bold' }} />}
+                text={t('anonymous.button.addPassword')}
+                shortText="Lock"
+                disabled
+              />
             </div>
 
             <Text italic className="text-right text-[10px] sm:text-[11px] md:text-xs text-amber-700 whitespace-nowrap">

@@ -27,7 +27,7 @@ export const useFolders = (userId: string | undefined) => {
     dispatch(setLoading(true));
 
     const unsubscribe = folderService.subscribeToFolders(userId, (fetchedFolders) => {
-      dispatch(setFolders(fetchedFolders.sort((a, b) => b.updatedAt - a.updatedAt)));
+      dispatch(setFolders([...fetchedFolders].sort((a, b) => b.updatedAt - a.updatedAt)));
       dispatch(setLoading(false));
     });
 

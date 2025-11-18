@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import { setSelectedNote, updateNote, addNote } from '@/store/slices/notesSlice';
+import { setSelectedNote, addNote } from '@/store/slices/notesSlice';
 import NoteEditor from '@/components/notes/note-editor';
 import { localStorageService } from '@/services/localStorageService';
 import { noteService } from '@/services/noteService';
 import { Note } from '@/types/Data';
 import { createEmptyNote } from '@/utils/note-utils';
-import { generateNoteId } from '@/utils/idGenerator';
+import { generateNoteId, isAnonymousNote } from '@/utils/idGenerator';
 
 export default function NotePage() {
   const params = useParams();
@@ -22,62 +22,96 @@ export default function NotePage() {
   const { notes } = useSelector((state: RootState) => state.notes);
 
   const [note, setNote] = useState<Note | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // Load note on mount
   useEffect(() => {
     const loadNote = async () => {
       try {
-        setLoading(true);
-        setError(null);
-
         if (isAuthenticated && user) {
           // Authenticated user - fetch from Firebase
           const fetchedNote = await noteService.getNote(user.id, noteId);
-          
+
           if (fetchedNote) {
             setNote(fetchedNote);
             dispatch(setSelectedNote(noteId));
           } else {
-            // Note doesn't exist, create a new one
+            // Note doesn't exist, create a new blank note
+            console.log('[NotePage] Note not found for authenticated user, creating new blank note:', noteId);
             const newNote: Note = {
               id: noteId,
               ...createEmptyNote(user.id),
             };
             await noteService.createNote(user.id, newNote);
-            setNote(newNote);
             dispatch(addNote(newNote));
+            setNote(newNote);
+            dispatch(setSelectedNote(noteId));
           }
         } else {
           // Anonymous user - use local storage
-          let fetchedNote = localStorageService.getNote(noteId);
-          
+          // First, check if noteId has correct anonymous format (ano_ prefix)
+          if (!isAnonymousNote(noteId)) {
+            console.log('[NotePage] Invalid anonymous note ID (missing ano_ prefix):', noteId);
+            console.log('[NotePage] Clearing data and creating new anonymous note');
+
+            // Clear all data to start fresh
+            localStorageService.clearAllData();
+
+            // Create new anonymous user ID
+            const newAnonymousUserId = localStorageService.getAnonymousUserId();
+
+            // Generate new note ID with ano_ prefix
+            const newNoteId = generateNoteId(true);
+
+            // Create the note FIRST before redirect to avoid loop
+            const newNote: Note = {
+              id: newNoteId,
+              ...createEmptyNote(newAnonymousUserId),
+            };
+            localStorageService.createNote(newNote);
+            dispatch(addNote(newNote));
+
+            console.log('[NotePage] Created new anonymous note, redirecting:', newNoteId);
+            router.replace(`/notes/${newNoteId}`);
+            return;
+          }
+
+          const fetchedNote = localStorageService.getNote(noteId);
+
+          // Check if note doesn't exist
           if (!fetchedNote) {
-            // Note doesn't exist, create a new one
+            console.log('[NotePage] Note not found in localStorage, creating new blank note:', noteId);
+
+            // Get anonymous user ID
             const anonymousUserId = localStorageService.getAnonymousUserId();
+
+            // Create a new blank note with the requested ID
             const newNote: Note = {
               id: noteId,
               ...createEmptyNote(anonymousUserId),
             };
             localStorageService.createNote(newNote);
-            fetchedNote = newNote;
             dispatch(addNote(newNote));
+            setNote(newNote);
+            dispatch(setSelectedNote(noteId));
+          } else {
+            setNote(fetchedNote);
+            dispatch(setSelectedNote(noteId));
           }
-          
-          setNote(fetchedNote);
-          dispatch(setSelectedNote(noteId));
         }
       } catch (err) {
-        console.error('Error loading note:', err);
-        setError('Failed to load note. Please try again.');
-      } finally {
-        setLoading(false);
+        console.error('[NotePage] Error loading note:', err);
+        // Still create empty note even on error
+        const userId = user?.id || localStorageService.getAnonymousUserId();
+        const emptyNote: Note = {
+          id: noteId,
+          ...createEmptyNote(userId),
+        };
+        setNote(emptyNote);
       }
     };
 
     loadNote();
-  }, [noteId, isAuthenticated, user, dispatch]);
+  }, [noteId, isAuthenticated, user, dispatch, router]);
 
   // Sync note updates from editor to local state
   useEffect(() => {
@@ -88,49 +122,9 @@ export default function NotePage() {
     }
   }, [notes, noteId]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center w-full h-full">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-gray-300 border-t-accent rounded-full animate-spin" />
-          <p>Loading note...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center w-full h-full">
-        <div className="flex flex-col items-center gap-4 text-center">
-          <h2 className="text-2xl font-bold">Error</h2>
-          <p className="text-[rgb(var(--color-text-secondary))]">{error}</p>
-          <button 
-            className="px-6 py-3 bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors"
-            onClick={() => router.push('/notes')}
-          >
-            Back to Notes
-          </button>
-        </div>
-      </div>
-    );
-  }
-
+  // Don't render until note is loaded
   if (!note) {
-    return (
-      <div className="flex items-center justify-center w-full h-full">
-        <div className="flex flex-col items-center gap-4 text-center">
-          <h2 className="text-2xl font-bold">Note Not Found</h2>
-          <p className="text-[rgb(var(--color-text-secondary))]">The note you&apos;re looking for doesn&apos;t exist.</p>
-          <button 
-            className="px-6 py-3 bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors"
-            onClick={() => router.push('/notes')}
-          >
-            Back to Notes
-          </button>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (

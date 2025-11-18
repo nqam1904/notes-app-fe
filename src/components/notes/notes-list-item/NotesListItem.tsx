@@ -12,7 +12,7 @@ interface NotesListItemProps {
 }
 
 export default function NotesListItem({ note, onClick }: NotesListItemProps) {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const locale = i18n.language === 'vi' ? vi : enUS;
 
   const timeAgo = formatDistanceToNow(new Date(note.updatedAt), {
@@ -20,7 +20,7 @@ export default function NotesListItem({ note, onClick }: NotesListItemProps) {
     locale,
   });
 
-  const title = note.title || 'Untitled';
+  const title = note.title || t('note.untitled');
   const preview = note.content.substring(0, 50).replace(/<[^>]*>/g, '');
 
   return (
@@ -39,7 +39,7 @@ export default function NotesListItem({ note, onClick }: NotesListItemProps) {
             </span>
           )}
         </div>
-        <p className="text-[13px] m-0 overflow-hidden text-ellipsis leading-[1.3] line-clamp-2 text-[rgb(var(--color-text-secondary))]">{preview || 'No additional text'}</p>
+        <p className="text-[13px] m-0 overflow-hidden text-ellipsis leading-[1.3] line-clamp-2 text-[rgb(var(--color-text-secondary))]">{preview || t('note.content.placeholder')}</p>
         <div className="flex items-center justify-between gap-sm pt-xs border-t border-[rgb(var(--color-border))]">
           <span className="text-[11px] text-[rgb(var(--color-text-tertiary))]">{timeAgo}</span>
           {note.tags && note.tags.length > 0 && (

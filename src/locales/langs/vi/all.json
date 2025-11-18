@@ -1,25 +1,25 @@
 {
   "app.name": "Ghi Chú",
   "app.tagline": "Ghi lại suy nghĩ, tổ chức ý tưởng của bạn",
-  
+
   "header.new": "Ghi Chú Mới",
   "header.search": "Tìm Kiếm",
   "header.settings": "Cài Đặt",
   "header.language": "Ngôn Ngữ",
-  
+
   "sidebar.allNotes": "Tất Cả Ghi Chú",
   "sidebar.folders": "Thư Mục",
   "sidebar.trash": "Thùng Rác",
   "sidebar.shared": "Chia Sẻ",
   "sidebar.archived": "Lưu Trữ",
   "sidebar.locked": "Ghi Chú Khóa",
-  
+
   "folder.new": "Thư Mục Mới",
   "folder.rename": "Đổi Tên Thư Mục",
   "folder.delete": "Xóa Thư Mục",
   "folder.create.placeholder": "Tên thư mục",
   "folder.untitled": "Thư Mục Không Tiêu Đề",
-  
+
   "note.new": "Ghi Chú Mới",
   "note.untitled": "Ghi Chú Không Tiêu Đề",
   "note.create": "Tạo ghi chú mới",
@@ -39,7 +39,7 @@
   "note.never": "Chưa bao giờ",
   "note.title.placeholder": "Tiêu Đề Ghi Chú",
   "note.content.placeholder": "Bắt đầu gõ...",
-  
+
   "editor.bold": "Đậm",
   "editor.italic": "Nghiêng",
   "editor.underline": "Gạch Dưới",
@@ -51,7 +51,7 @@
   "editor.quote": "Trích Dẫn",
   "editor.undo": "Hoàn Tác",
   "editor.redo": "Làm Lại",
-  
+
   "dialog.confirm": "Xác Nhận",
   "dialog.cancel": "Hủy",
   "dialog.delete": "Xóa",
@@ -59,15 +59,16 @@
   "dialog.close": "Đóng",
   "dialog.deleteWarning": "Hành động này không thể được hoàn tác.",
   "dialog.permanentlyDelete": "Xóa vĩnh viễn",
-  
+
   "message.savedSuccessfully": "Ghi chú đã được lưu thành công",
   "message.deletedSuccessfully": "Ghi chú đã được xóa thành công",
   "message.archivedSuccessfully": "Ghi chú đã được lưu trữ thành công",
   "message.restoredSuccessfully": "Ghi chú đã được khôi phục thành công",
   "message.error": "Có lỗi xảy ra",
   "message.loading": "Đang tải...",
+  "message.typing": "Đang gõ...",
   "message.syncing": "Đang đồng bộ...",
-  
+
   "settings.title": "Cài Đặt",
   "settings.appearance": "Giao Diện",
   "settings.language": "Ngôn Ngữ",
@@ -76,25 +77,44 @@
   "settings.fontSize": "Kích Thước Phông",
   "settings.about": "Thông Tin",
   "settings.version": "Phiên Bản",
-  
+
   "search.placeholder": "Tìm kiếm ghi chú...",
   "search.noResults": "Không tìm thấy ghi chú nào",
   "search.recentSearches": "Tìm Kiếm Gần Đây",
-  
+
   "trash.empty": "Thùng rác trống",
   "trash.permanentlyDelete": "Xóa vĩnh viễn",
   "trash.restore": "Khôi Phục",
   "trash.emptyTrash": "Làm Trống Thùng Rác",
-  
+
   "mobile.menu": "Menu",
   "mobile.back": "Quay Lại",
   "mobile.done": "Xong",
   "mobile.edit": "Sửa",
-  
+
   "anonymous.header.tagline": "Lưu ghi chú của bạn - Bảo mật ghi chú của bạn",
   "anonymous.button.newNote": "Ghi chú mới",
   "anonymous.button.shareUrl": "Chia sẻ Url",
   "anonymous.button.changeUrl": "Thay đổi Url",
   "anonymous.button.addPassword": "Thêm mật khẩu",
-  "anonymous.warning.deletion": "*Ghi chú của bạn sẽ bị xóa sau 20 ngày nếu không đặt mật khẩu"
+  "anonymous.warning.deletion": "*Ghi chú của bạn sẽ bị xóa sau 20 ngày nếu không đặt mật khẩu",
+
+  "page.notFound.title": "404",
+  "page.notFound.heading": "Không Tìm Thấy Trang",
+  "page.notFound.message": "Trang bạn đang tìm kiếm không tồn tại hoặc đã được di chuyển.",
+  "page.notFound.goToNotes": "Đến Ghi Chú",
+
+  "page.loading.text": "Đang tải ghi chú...",
+
+  "page.noteDetail.loading": "Đang tải...",
+  "page.noteDetail.error.title": "Lỗi",
+  "page.noteDetail.error.message": "Không thể tải ghi chú. Vui lòng thử lại.",
+  "page.noteDetail.error.backToNotes": "Quay Lại Ghi Chú",
+  "page.noteDetail.notFound.title": "Không Tìm Thấy Ghi Chú",
+  "page.noteDetail.notFound.message": "Ghi chú bạn đang tìm kiếm không tồn tại.",
+
+  "common.loading": "Đang tải...",
+  "common.error": "Lỗi",
+  "common.tryAgain": "Vui lòng thử lại",
+  "common.backToNotes": "Quay Lại Ghi Chú"
 }

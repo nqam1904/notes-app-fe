@@ -114,9 +114,6 @@ function applyFilter(state: NotesState) {
   if (state.filter.status) {
     filtered = filtered.filter((note) => note.status === state.filter.status);
   }
-  if (state.filter.color) {
-    filtered = filtered.filter((note) => note.color === state.filter.color);
-  }
   if (state.filter.isPinned !== undefined) {
     filtered = filtered.filter(
       (note) => note.isPinned === state.filter.isPinned

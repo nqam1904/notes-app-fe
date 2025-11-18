@@ -6,6 +6,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { generateNoteId } from '@/utils/idGenerator';
 import { localStorageService } from '@/services/localStorageService';
+import ROUTES from '@/routes/path';
+import { logAction } from '@/utils/log-utils';
 
 export default function NotesPage() {
   const router = useRouter();
@@ -13,32 +15,58 @@ export default function NotesPage() {
   const { isAuthenticated } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
-    // Check if there are existing notes
-    let existingNotes = notes;
+    const startTime = Date.now();
 
-    if (!isAuthenticated && notes.length === 0) {
-      // For anonymous users, check local storage
-      existingNotes = localStorageService.getNotes();
-    }
+    try {
+      console.log('[NotesPage] Initializing notes page');
+      console.log('[NotesPage] Authentication status:', isAuthenticated ? 'Authenticated' : 'Anonymous');
+      console.log('[NotesPage] Notes in Redux store:', notes.length);
 
-    if (existingNotes.length > 0) {
-      // If there are notes, redirect to the most recent one
-      const mostRecentNote = existingNotes.sort((a, b) => b.updatedAt - a.updatedAt)[0];
-      router.push(`/notes/${mostRecentNote.id}`);
-    } else {
-      // No notes exist, create a new one with random ID
-      const newNoteId = generateNoteId();
-      router.push(`/notes/${newNoteId}`);
+      // Check if there are existing notes
+      let existingNotes = notes;
+
+      if (!isAuthenticated && notes.length === 0) {
+        // For anonymous users, check local storage
+        console.log('[NotesPage] Checking local storage for anonymous user notes');
+        existingNotes = localStorageService.getNotes();
+        console.log('[NotesPage] Notes found in local storage:', existingNotes.length);
+      }
+
+      if (existingNotes.length > 0) {
+        // If there are notes, redirect to the most recent one
+        // Create a copy of the array before sorting to avoid mutating read-only Redux state
+        const mostRecentNote = [...existingNotes].sort((a, b) => b.updatedAt - a.updatedAt)[0];
+        const targetRoute = ROUTES.NOTES_ANONYMOUS.replace(':id', mostRecentNote.id);
+        console.log('[NotesPage] Redirecting to most recent note:', {
+          noteId: mostRecentNote.id,
+          title: mostRecentNote.title,
+          route: targetRoute
+        });
+        router.push(targetRoute);
+        logAction('info', 'NotesPage - Redirect to existing note', startTime, 'Success', {
+          noteId: mostRecentNote.id,
+          totalNotes: existingNotes.length
+        });
+      } else {
+        // No notes exist, create a new one with random ID
+        const newNoteId = generateNoteId(!isAuthenticated);
+        const targetRoute = ROUTES.NOTES_ANONYMOUS.replace(':id', newNoteId);
+        console.log('[NotesPage] No notes found, creating new note:', {
+          noteId: newNoteId,
+          route: targetRoute
+        });
+        router.push(targetRoute);
+        logAction('info', 'NotesPage - Create new note', startTime, 'Success', {
+          noteId: newNoteId
+        });
+      }
+    } catch (error: any) {
+      console.error('[NotesPage] Error during initialization:', error);
+      logAction('error', 'NotesPage - Initialization', startTime, error.message);
     }
   }, [router, notes, isAuthenticated]);
 
-  return (
-    <div className="flex items-center justify-center w-full h-screen">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-12 h-12 border-4 border-gray-300 border-t-accent rounded-full animate-spin" />
-        <p>Loading notes...</p>
-      </div>
-    </div>
-  );
+  // Next.js loading.tsx will handle the loading UI during navigation
+  return null;
 }
 

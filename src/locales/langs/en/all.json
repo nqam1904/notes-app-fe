@@ -66,6 +66,7 @@
   "message.restoredSuccessfully": "Note restored successfully",
   "message.error": "An error occurred",
   "message.loading": "Loading...",
+  "message.typing": "Typing...",
   "message.syncing": "Syncing...",
 
   "settings.title": "Settings",
@@ -96,5 +97,24 @@
   "anonymous.button.shareUrl": "Share Url",
   "anonymous.button.changeUrl": "Change Url",
   "anonymous.button.addPassword": "Add Password",
-  "anonymous.warning.deletion": "*Your note will be deleted after 20 days if not set password"
+  "anonymous.warning.deletion": "*Your note will be deleted after 20 days if not set password",
+
+  "page.notFound.title": "404",
+  "page.notFound.heading": "Page Not Found",
+  "page.notFound.message": "The page you're looking for doesn't exist or has been moved.",
+  "page.notFound.goToNotes": "Go to Notes",
+
+  "page.loading.text": "Loading notes...",
+  
+  "page.noteDetail.loading": "Loading...",
+  "page.noteDetail.error.title": "Error",
+  "page.noteDetail.error.message": "Failed to load note. Please try again.",
+  "page.noteDetail.error.backToNotes": "Back to Notes",
+  "page.noteDetail.notFound.title": "Note Not Found",
+  "page.noteDetail.notFound.message": "The note you're looking for doesn't exist.",
+  
+  "common.loading": "Loading...",
+  "common.error": "Error",
+  "common.tryAgain": "Please try again",
+  "common.backToNotes": "Back to Notes"
 }
