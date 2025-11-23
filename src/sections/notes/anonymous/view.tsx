@@ -5,7 +5,7 @@ import LanguageSwitcher from '@/components/language-switcher';
 import { CONFIG } from '@/config-global';
 import { useTranslate } from '@/locales/use-locales';
 import { ROUTES } from '@/routes/path';
-import { localStorageService } from '@/services/localStorageService';
+import { localStorageService } from '@/services/local-service';
 import { RootState } from '@/store';
 import { generateNoteId } from '@/utils/id-generator';
 import {
@@ -35,25 +35,22 @@ export function AnonymousNotesView({ children }: AnonymousNotesViewProps) {
 
   // State for Change URL modal
   const [isChangeUrlModalOpen, setIsChangeUrlModalOpen] = useState(false);
-  const [newUrlInput, setNewUrlInput] = useState('');
+  const [newUrlInput, setNewUrlInput] = useState(currentNoteId);
   const [isChangingUrl, setIsChangingUrl] = useState(false);
 
   const handleCreateNewNote = () => {
     // Generate new note ID for anonymous user (with anon_ prefix)
     const newNoteId = generateNoteId(true);
     const targetRoute = ROUTES.NOTES_ANONYMOUS.replace(':id', newNoteId);
-    console.log('[AnonymousNotesLayout] Creating new note:', newNoteId);
     window.open(targetRoute, '_blank');
   };
 
   const handleOpenChangeUrlModal = () => {
-    setNewUrlInput('');
     setIsChangeUrlModalOpen(true);
   };
 
   const handleCloseChangeUrlModal = () => {
     setIsChangeUrlModalOpen(false);
-    setNewUrlInput('');
   };
 
   const validateNoteId = (id: string): { valid: boolean; error?: string } => {
@@ -64,24 +61,9 @@ export function AnonymousNotesView({ children }: AnonymousNotesViewProps) {
 
     const trimmedId = id.trim();
 
-    // Check length (reasonable limits)
-    if (trimmedId.length < 3) {
-      return { valid: false, error: t('modal.changeUrl.rule2') };
-    }
-
-    if (trimmedId.length > 50) {
-      return { valid: false, error: t('modal.changeUrl.rule2') };
-    }
-
-    // Check for valid characters (alphanumeric, underscore, hyphen)
-    const validPattern = /^[a-zA-Z0-9_-]+$/;
-    if (!validPattern.test(trimmedId)) {
-      return { valid: false, error: t('modal.changeUrl.rule1') };
-    }
-
     // Check if same as current
-    if (trimmedId === currentNoteId) {
-      return { valid: false, error: t('modal.changeUrl.errorInvalid') };
+    if (trimmedId.toLowerCase() === currentNoteId.toLowerCase()) {
+      return { valid: false, error: t('modal.changeUrl.errorExists') };
     }
 
     return { valid: true };
@@ -101,11 +83,8 @@ export function AnonymousNotesView({ children }: AnonymousNotesViewProps) {
 
       const newNoteId = newUrlInput.trim();
 
-      // Add ano_ prefix if not present
-      const finalNoteId = newNoteId.startsWith('ano_') ? newNoteId : `ano_${newNoteId}`;
-
       // Check if note with this ID already exists
-      const existingNote = localStorageService.getNote(finalNoteId);
+      const existingNote = localStorageService.getNote(newNoteId);
       if (existingNote) {
         message.error(t('modal.changeUrl.errorExists'));
         setIsChangingUrl(false);
@@ -121,12 +100,10 @@ export function AnonymousNotesView({ children }: AnonymousNotesViewProps) {
         return;
       }
 
-      console.log('[AnonymousNotesLayout] Changing URL from', currentNoteId, 'to', finalNoteId);
-
       // Create new note with the same content but new ID
       const newNote = {
         ...currentNote,
-        id: finalNoteId,
+        id: newNoteId,
         updatedAt: Date.now(),
       };
 
@@ -136,8 +113,6 @@ export function AnonymousNotesView({ children }: AnonymousNotesViewProps) {
       // Delete the old note
       localStorageService.deleteNote(currentNoteId);
 
-      console.log('[AnonymousNotesLayout] Note migrated successfully to new URL:', finalNoteId);
-
       // Close modal
       handleCloseChangeUrlModal();
 
@@ -145,8 +120,9 @@ export function AnonymousNotesView({ children }: AnonymousNotesViewProps) {
       message.success(t('modal.changeUrl.success'));
 
       // Redirect to new URL
-      const targetRoute = ROUTES.NOTES_ANONYMOUS.replace(':id', finalNoteId);
-      router.push(targetRoute);
+      const targetRoute = ROUTES.NOTES_ANONYMOUS.replace(':id', newNoteId);
+      router.replace(targetRoute);
+      router.refresh();
 
     } catch (error) {
       console.error('[AnonymousNotesLayout] Error changing URL:', error);
@@ -159,10 +135,10 @@ export function AnonymousNotesView({ children }: AnonymousNotesViewProps) {
   return (
     <div className="min-h-screen bg-[#f9f5e7] flex flex-col">
       <Header className="flex items-center justify-center px-3 sm:px-4 md:px-6 py-3 sm:py-4 bg-white border-b border-yellow-200" style={{ height: 'auto' }}>
-        <div className="w-full max-w-[1320px] flex items-center justify-between text-xs sm:text-sm md:text-base">
-          <div>
-            <Text strong className="tracking-wide">{CONFIG.appName}</Text>
-            <Text type="secondary" className="ml-1">- {t('anonymous.header.tagline')}</Text>
+        <div className="w-full max-w-[1320px] flex items-center justify-between">
+          <div className="flex items-center gap-1 text-xs sm:text-sm md:text-base overflow-hidden">
+            <Text strong className="tracking-wide whitespace-nowrap flex-shrink-0">{CONFIG.appName}</Text>
+            <Text type="secondary" className="hidden sm:inline truncate ml-1">- {t('anonymous.header.tagline')}</Text>
           </div>
           <LanguageSwitcher />
         </div>
@@ -230,14 +206,12 @@ export function AnonymousNotesView({ children }: AnonymousNotesViewProps) {
               {t('modal.changeUrl.currentUrl')} <Text strong className="text-amber-600">{currentNoteId}</Text>
             </Text>
           </div>
-
           <div className="mb-2">
             <Text className="text-sm font-medium">{t('modal.changeUrl.enterNewUrl')}</Text>
           </div>
-
           <div className="flex items-center gap-2">
-            <Text className="text-sm text-gray-500">{t('modal.changeUrl.prefix')}</Text>
             <Input
+              allowClear
               placeholder={t('modal.changeUrl.placeholder')}
               value={newUrlInput}
               onChange={(e) => setNewUrlInput(e.target.value)}
@@ -246,14 +220,6 @@ export function AnonymousNotesView({ children }: AnonymousNotesViewProps) {
               autoFocus
               className="flex-1"
             />
-          </div>
-
-          <div className="mt-3">
-            <Text className="text-xs text-gray-500">
-              • {t('modal.changeUrl.rule1')}<br />
-              • {t('modal.changeUrl.rule2')}<br />
-              • {t('modal.changeUrl.rule3')}
-            </Text>
           </div>
         </div>
       </Modal>

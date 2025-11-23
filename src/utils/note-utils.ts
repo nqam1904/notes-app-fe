@@ -1,9 +1,8 @@
+import {
+  NOTE_EXPIRATION_MS
+} from "@/constants/constants";
 import { Note } from "@/types/Data";
 import { generateNoteId as generateId } from "./id-generator";
-import {
-  NOTE_EXPIRATION_MS,
-  NOTE_EXPIRATION_DAYS,
-} from "@/constants/constants";
 
 /**
  * Generate a unique ID for a note
@@ -17,11 +16,13 @@ export const generateNoteId = (isAnonymous: boolean = false): string => {
  * Create a new empty note
  */
 export const createEmptyNote = (
+  id: string,
   userId: string,
   folderId?: string
-): Omit<Note, "id"> => {
+): Note => {
   const now = Date.now();
   return {
+    id,
     title: "",
     content: "",
     folderId,

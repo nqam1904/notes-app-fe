@@ -98,15 +98,11 @@
   "anonymous.button.changeUrl": "Change Url",
   "anonymous.button.addPassword": "Add Password",
   "anonymous.warning.deletion": "*Your note will be deleted after 20 days if not set password",
-  
+
   "modal.changeUrl.title": "Change Note URL",
   "modal.changeUrl.currentUrl": "Current URL:",
   "modal.changeUrl.enterNewUrl": "Enter new URL ID:",
-  "modal.changeUrl.prefix": "ano_",
   "modal.changeUrl.placeholder": "my-custom-note",
-  "modal.changeUrl.rule1": "Use letters, numbers, underscore (_), or hyphen (-)",
-  "modal.changeUrl.rule2": "Must be 3-50 characters long",
-  "modal.changeUrl.rule3": "Your note content will be moved to the new URL",
   "modal.changeUrl.cancel": "Cancel",
   "modal.changeUrl.changeButton": "Change URL",
   "modal.changeUrl.success": "URL changed successfully",
@@ -130,14 +126,14 @@
   "page.500.goToNotes": "Go to Notes",
 
   "page.loading.text": "Loading notes...",
-  
+
   "page.noteDetail.loading": "Loading...",
   "page.noteDetail.error.title": "Error",
   "page.noteDetail.error.message": "Failed to load note. Please try again.",
   "page.noteDetail.error.backToNotes": "Back to Notes",
   "page.noteDetail.notFound.title": "Note Not Found",
   "page.noteDetail.notFound.message": "The note you're looking for doesn't exist.",
-  
+
   "common.loading": "Loading...",
   "common.error": "Error",
   "common.tryAgain": "Please try again",

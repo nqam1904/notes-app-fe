@@ -1,6 +1,6 @@
 'use server';
 
-import { noteService } from '@/services/noteService';
+import { noteService } from '@/services/note-service';
 import { Note } from '@/types/Data';
 
 /**

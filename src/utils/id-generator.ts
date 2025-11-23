@@ -102,38 +102,11 @@ export const isValidNoteId = (id: string): boolean => {
 };
 
 /**
- * Check if a user ID is anonymous
- */
-export const isUser = (userId: string): boolean => {
-  return userId.startsWith("user_");
-};
-
-/**
- * Check if a note ID is from an anonymous user
- */
-export const isUserNote = (noteId: string): boolean => {
-  return noteId.startsWith("user_");
-};
-
-/**
  * Check if a note ID is from an anonymous user (does not have user_ prefix)
  * Anonymous notes have format: "Tkf4N3Q71" or "ano_customid"
  */
 export const isAnonymousNote = (noteId: string): boolean => {
-  // Anonymous notes either:
-  // 1. Start with uppercase letter and are 9 chars (short format)
-  // 2. Start with "ano_" prefix (custom anonymous notes)
-  // 3. Do NOT start with "user_"
-
   if (!noteId) return false;
 
-  // If it starts with user_, it's not anonymous
-  if (noteId.startsWith("user_")) return false;
-
-  // If it starts with ano_, it's anonymous
-  if (noteId.startsWith("ano_")) return true;
-
-  // Check if it's the short format (9 chars, starts with uppercase)
-  const shortFormat = /^[A-Z][A-Za-z0-9]{8}$/;
-  return shortFormat.test(noteId);
+  return !noteId.startsWith("user_");
 };

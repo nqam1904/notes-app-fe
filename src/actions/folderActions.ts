@@ -1,6 +1,6 @@
 'use server';
 
-import { folderService } from '@/services/folderService';
+import { folderService } from '@/services/folder-service';
 import { Folder } from '@/types/Data';
 
 /**

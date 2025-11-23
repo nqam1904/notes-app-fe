@@ -1,22 +1,22 @@
 "use client";
 
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState, AppDispatch } from "@/store";
+import { localStorageService } from "@/services/local-service";
+import { noteService } from "@/services/note-service";
+import { AppDispatch, RootState } from "@/store";
 import {
-  setNotes,
   addNote,
-  updateNote,
   deleteNote,
-  setLoading,
   setError,
   setFilter,
+  setLoading,
+  setNotes,
   setSearchQuery,
+  updateNote,
 } from "@/store/slices/notesSlice";
-import { noteService } from "@/services/noteService";
-import { localStorageService } from "@/services/localStorageService";
 import { Note, NoteFilter } from "@/types/Data";
 import { generateNoteId } from "@/utils/id-generator";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 export const useNotes = (userId?: string | null, isAnonymous = false) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -32,10 +32,10 @@ export const useNotes = (userId?: string | null, isAnonymous = false) => {
 
     if (isAnonymous) {
       // Load from local storage for anonymous users
-      const localNotes = localStorageService.getNotes();
-      dispatch(
-        setNotes([...localNotes].sort((a, b) => b.updatedAt - a.updatedAt))
-      );
+      const localNotes = localStorageService.getNote();
+      // dispatch(
+      //   setNotes([...localNotes].sort((a, b) => b.updatedAt - a.updatedAt))
+      // );
       dispatch(setLoading(false));
     } else if (userId) {
       // Subscribe to Firebase for authenticated users

@@ -1,7 +1,7 @@
 'use client';
 
 import { ROUTES } from '@/routes/path';
-import { localStorageService } from '@/services/localStorageService';
+import { localStorageService } from '@/services/local-service';
 import { RootState } from '@/store';
 import { generateNoteId } from '@/utils/id-generator';
 import { logAction } from '@/utils/log-utils';
@@ -28,7 +28,7 @@ export default function NotesPage() {
       if (!isAuthenticated && notes.length === 0) {
         // For anonymous users, check local storage
         console.log('[NotesPage] Checking local storage for anonymous user notes');
-        existingNotes = localStorageService.getNotes();
+        // existingNotes = localStorageService.getNotes();
         console.log('[NotesPage] Notes found in local storage:', existingNotes.length);
       }
 

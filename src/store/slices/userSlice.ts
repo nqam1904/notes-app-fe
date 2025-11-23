@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { localStorageService } from "@/services/local-service";
 import { User, UserPreferences } from "@/types/Data";
-import { localStorageService } from "@/services/localStorageService";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface UserState {
   user: User | null;
