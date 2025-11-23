@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
-import { generateNoteId } from '@/utils/idGenerator';
+import { ROUTES } from '@/routes/path';
 import { localStorageService } from '@/services/localStorageService';
-import ROUTES from '@/routes/path';
+import { RootState } from '@/store';
+import { generateNoteId } from '@/utils/id-generator';
 import { logAction } from '@/utils/log-utils';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
 export default function NotesPage() {
   const router = useRouter();

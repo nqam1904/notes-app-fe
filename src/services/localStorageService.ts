@@ -1,18 +1,10 @@
-// ----------------------------------------------------------------------
-// Local Storage Service for Anonymous Notes
-// ----------------------------------------------------------------------
-
 import { Note, Folder } from "@/types/Data";
 import { localStorageAvailable } from "@/utils/storage-available";
 import { NOTE_EXPIRATION_MS } from "@/constants/constants";
+import { generateUserId } from "@/utils/id-generator";
 
 const ANONYMOUS_NOTES_KEY = "anonymous_notes";
-const ANONYMOUS_FOLDERS_KEY = "anonymous_folders";
 const ANONYMOUS_USER_ID_KEY = "anonymous_user_id";
-
-// ----------------------------------------------------------------------
-// Helper Functions
-// ----------------------------------------------------------------------
 
 /**
  * Check if local storage is available and throw error if not
@@ -103,12 +95,10 @@ export const localStorageService = {
   getAnonymousUserId(): string {
     ensureLocalStorage();
     let userId = localStorage.getItem(ANONYMOUS_USER_ID_KEY);
-    console.log(userId, "userId");
     if (!userId) {
-      userId = `anon_${Math.random().toString(36).substring(2, 10)}`;
+      userId = `anon_${generateUserId()}`;
       localStorage.setItem(ANONYMOUS_USER_ID_KEY, userId);
     }
-    console.log("userId", userId);
     return userId;
   },
 
@@ -186,159 +176,11 @@ export const localStorageService = {
   },
 
   /**
-   * Get notes by folder
-   */
-  getNotesByFolder(folderId: string): Note[] {
-    const notes = this.getNotes();
-    return notes.filter((note) => note.folderId === folderId);
-  },
-
-  /**
-   * Search notes
-   */
-  searchNotes(query: string): Note[] {
-    const notes = this.getNotes();
-    const lowerQuery = query.toLowerCase();
-
-    return notes.filter(
-      (note) =>
-        note.title.toLowerCase().includes(lowerQuery) ||
-        note.content.toLowerCase().includes(lowerQuery) ||
-        note.tags?.some((tag) => tag.toLowerCase().includes(lowerQuery))
-    );
-  },
-
-  /**
    * Clear all notes
    */
   clearAllNotes(): void {
     ensureLocalStorage();
     localStorage.removeItem(ANONYMOUS_NOTES_KEY);
-  },
-
-  /**
-   * Clear all anonymous data (notes, folders, and user ID)
-   */
-  clearAllData(): void {
-    ensureLocalStorage();
-    localStorage.removeItem(ANONYMOUS_NOTES_KEY);
-    localStorage.removeItem(ANONYMOUS_FOLDERS_KEY);
-    localStorage.removeItem(ANONYMOUS_USER_ID_KEY);
-    console.log("[LocalStorage] All anonymous data cleared");
-  },
-
-  /**
-   * Get folders
-   */
-  getFolders(): Folder[] {
-    ensureLocalStorage();
-    try {
-      const data = localStorage.getItem(ANONYMOUS_FOLDERS_KEY);
-      return data ? JSON.parse(data) : [];
-    } catch (error) {
-      console.error("Error reading folders from local storage:", error);
-      return [];
-    }
-  },
-
-  /**
-   * Create a folder
-   */
-  createFolder(folder: Folder): Folder {
-    const folders = this.getFolders();
-    folders.push(folder);
-    localStorage.setItem(ANONYMOUS_FOLDERS_KEY, JSON.stringify(folders));
-    return folder;
-  },
-
-  /**
-   * Update a folder
-   */
-  updateFolder(folderId: string, updates: Partial<Folder>): Folder | null {
-    const folders = this.getFolders();
-    const folderIndex = folders.findIndex((f) => f.id === folderId);
-
-    if (folderIndex === -1) {
-      return null;
-    }
-
-    const updatedFolder = {
-      ...folders[folderIndex],
-      ...updates,
-      updatedAt: Date.now(),
-    };
-
-    folders[folderIndex] = updatedFolder;
-    localStorage.setItem(ANONYMOUS_FOLDERS_KEY, JSON.stringify(folders));
-    return updatedFolder;
-  },
-
-  /**
-   * Delete a folder
-   */
-  deleteFolder(folderId: string): boolean {
-    const folders = this.getFolders();
-    const filteredFolders = folders.filter((f) => f.id !== folderId);
-
-    if (filteredFolders.length === folders.length) {
-      return false;
-    }
-
-    localStorage.setItem(
-      ANONYMOUS_FOLDERS_KEY,
-      JSON.stringify(filteredFolders)
-    );
-    return true;
-  },
-
-  /**
-   * Export all data
-   */
-  exportAllData(): { notes: Note[]; folders: Folder[]; userId: string } {
-    return {
-      notes: this.getNotes(),
-      folders: this.getFolders(),
-      userId: this.getAnonymousUserId(),
-    };
-  },
-
-  /**
-   * Import data
-   */
-  importData(data: { notes: Note[]; folders?: Folder[] }): void {
-    ensureLocalStorage();
-
-    // Convert notes array to object
-    const notesObject: Record<string, Note> = {};
-    data.notes.forEach((note) => {
-      notesObject[note.id] = note;
-    });
-
-    saveAllNotes(notesObject);
-
-    if (data.folders) {
-      localStorage.setItem(ANONYMOUS_FOLDERS_KEY, JSON.stringify(data.folders));
-    }
-  },
-
-  /**
-   * Get storage statistics
-   */
-  getStorageStats(): {
-    noteCount: number;
-    folderCount: number;
-    storageUsed: number;
-  } {
-    const notes = this.getNotes();
-    const folders = this.getFolders();
-    const notesData = localStorage.getItem(ANONYMOUS_NOTES_KEY) || "";
-    const foldersData = localStorage.getItem(ANONYMOUS_FOLDERS_KEY) || "";
-
-    return {
-      noteCount: notes.length,
-      folderCount: folders.length,
-      storageUsed: notesData.length + foldersData.length,
-    };
   },
 
   /**
@@ -362,9 +204,9 @@ export const localStorageService = {
 
     Object.entries(notes).forEach(([id, note]) => {
       // Check if note has old prefix
-      if (id.startsWith('ano_')) {
+      if (id.startsWith("ano_")) {
         // Create new ID with anon_ prefix
-        const newId = id.replace('ano_', 'anon_');
+        const newId = id.replace("ano_", "anon_");
         // Update note object
         const updatedNote = { ...note, id: newId };
         updatedNotes[newId] = updatedNote;
@@ -379,7 +221,9 @@ export const localStorageService = {
     // Save updated notes if any were migrated
     if (migratedCount > 0) {
       saveAllNotes(updatedNotes);
-      console.log(`[LocalStorage] Migration complete: ${migratedCount} note(s) migrated`);
+      console.log(
+        `[LocalStorage] Migration complete: ${migratedCount} note(s) migrated`
+      );
     }
 
     return migratedCount;

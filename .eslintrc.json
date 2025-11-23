@@ -1,12 +1,7 @@
 {
   "extends": "next/core-web-vitals",
-  "overrides": [
-    {
-      "files": ["*.ts", "*.tsx"],
-      "rules": {
-        "no-console": "off",
-        "react-hooks/exhaustive-deps": "off"
-      }
-    }
-  ]
+  "rules": {
+    "no-console": "off",
+    "react-hooks/exhaustive-deps": "off"
+  }
 }

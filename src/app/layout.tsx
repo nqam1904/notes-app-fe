@@ -1,12 +1,12 @@
-import './globals.css';
 import 'antd/dist/reset.css';
+import './globals.css';
 
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 
+import ClientProviders from '@/components/providers';
 import { CONFIG } from '@/config-global';
 import { detectLanguage } from '@/locales/server';
-import ClientProviders from '@/components/providers/ClientProviders';
 
 // ----------------------------------------------------------------------
 // Font Configuration
@@ -93,7 +93,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
 
   return (
     <html lang={lang} suppressHydrationWarning className={fontVariable}>
-      <body>
+      <body className="h-full">
         <ClientProviders lang={CONFIG.isStaticExport ? undefined : lang}>
           {children}
         </ClientProviders>

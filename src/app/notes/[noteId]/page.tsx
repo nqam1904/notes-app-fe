@@ -1,16 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/store';
-import { setSelectedNote, addNote } from '@/store/slices/notesSlice';
-import NoteEditor from '@/components/notes/note-editor';
+import NoteEditor from '@/components/input/input-editor';
 import { localStorageService } from '@/services/localStorageService';
 import { noteService } from '@/services/noteService';
+import { RootState } from '@/store';
+import { addNote, setSelectedNote } from '@/store/slices/notesSlice';
 import { Note } from '@/types/Data';
+import { generateNoteId, isAnonymousNote } from '@/utils/id-generator';
 import { createEmptyNote } from '@/utils/note-utils';
-import { generateNoteId, isAnonymousNote } from '@/utils/idGenerator';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function NotePage() {
   const params = useParams();
@@ -50,22 +50,17 @@ export default function NotePage() {
           // Anonymous user - use local storage
           // First, check if noteId has correct anonymous format (ano_ prefix)
           if (!isAnonymousNote(noteId)) {
-            console.log('[NotePage] Invalid anonymous note ID (missing ano_ prefix):', noteId);
-            console.log('[NotePage] Clearing data and creating new anonymous note');
+            console.log('[NotePage] Invalid anonymous note ID format:', noteId);
+            console.log('[NotePage] Creating new anonymous note with standard format');
 
-            // Clear all data to start fresh
-            localStorageService.clearAllData();
-
-            // Create new anonymous user ID
-            const newAnonymousUserId = localStorageService.getAnonymousUserId();
-
-            // Generate new note ID with ano_ prefix
+            // Generate new note ID with proper anonymous format
             const newNoteId = generateNoteId(true);
 
             // Create the note FIRST before redirect to avoid loop
+            const anonymousUserId = localStorageService.getAnonymousUserId();
             const newNote: Note = {
               id: newNoteId,
-              ...createEmptyNote(newAnonymousUserId),
+              ...createEmptyNote(anonymousUserId),
             };
             localStorageService.createNote(newNote);
             dispatch(addNote(newNote));

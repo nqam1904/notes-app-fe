@@ -1,17 +1,21 @@
-export const ROUTES = {
+export const ROOT = {
   HOME: "/",
   NOTES: "/notes",
-  NOTES_ANONYMOUS: "/notes/:id",
-  FOLDERS: "/notes/folders",
-  TRASH: "/notes/trash",
-  ARCHIVED: "/notes/archived",
-  SHARED: "/notes/shared",
+  AUTH: "/auth",
   SETTINGS: "/settings",
-  AUTH: {
-    LOGIN: "/auth/login",
-    REGISTER: "/auth/register",
-    FORGOT_PASSWORD: "/auth/forgot-password",
-  },
+  ERROR: "/error",
 };
-
-export default ROUTES;
+export const ROUTES = {
+  NOTES_ANONYMOUS: `${ROOT.NOTES}/:id`,
+  FOLDERS: "/notes/folders",
+  TRASH: `${ROOT.NOTES}/trash`,
+  ARCHIVED: `${ROOT.NOTES}/archived`,
+  SHARED: `${ROOT.NOTES}/shared`,
+  SETTINGS: `${ROOT.SETTINGS}`,
+  LOGIN: `${ROOT.AUTH}/login`,
+  REGISTER: `${ROOT.AUTH}/register`,
+  FORGOT_PASSWORD: `${ROOT.AUTH}/forgot-password`,
+  ERROR_403: `${ROOT.ERROR}/403`,
+  ERROR_404: `${ROOT.ERROR}/404`,
+  ERROR_500: `${ROOT.ERROR}/500`,
+};

@@ -16,7 +16,7 @@ import {
 import { noteService } from "@/services/noteService";
 import { localStorageService } from "@/services/localStorageService";
 import { Note, NoteFilter } from "@/types/Data";
-import { generateNoteId } from "@/utils/idGenerator";
+import { generateNoteId } from "@/utils/id-generator";
 
 export const useNotes = (userId?: string | null, isAnonymous = false) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -33,7 +33,9 @@ export const useNotes = (userId?: string | null, isAnonymous = false) => {
     if (isAnonymous) {
       // Load from local storage for anonymous users
       const localNotes = localStorageService.getNotes();
-      dispatch(setNotes([...localNotes].sort((a, b) => b.updatedAt - a.updatedAt)));
+      dispatch(
+        setNotes([...localNotes].sort((a, b) => b.updatedAt - a.updatedAt))
+      );
       dispatch(setLoading(false));
     } else if (userId) {
       // Subscribe to Firebase for authenticated users
@@ -41,7 +43,9 @@ export const useNotes = (userId?: string | null, isAnonymous = false) => {
         userId,
         (fetchedNotes) => {
           dispatch(
-            setNotes([...fetchedNotes].sort((a, b) => b.updatedAt - a.updatedAt))
+            setNotes(
+              [...fetchedNotes].sort((a, b) => b.updatedAt - a.updatedAt)
+            )
           );
           dispatch(setLoading(false));
         }

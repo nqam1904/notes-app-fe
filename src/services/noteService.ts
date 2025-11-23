@@ -1,26 +1,37 @@
-import { database } from '@/config/firebase';
+import { firestore } from '@/config/firebase';
 import {
-  ref,
-  push,
-  update,
-  remove,
-  get,
+  collection,
+  doc,
+  addDoc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
   query,
-  orderByChild,
-  equalTo,
-  onValue,
-  off,
-} from 'firebase/database';
+  where,
+  onSnapshot,
+  orderBy,
+  Timestamp,
+  Unsubscribe,
+} from 'firebase/firestore';
 import { Note, NoteStatus } from '@/types/Data';
 
-const NOTES_PATH = 'notes';
+const NOTES_COLLECTION = 'notes';
 
-// Helper function to ensure database is available
-const ensureDatabase = () => {
-  if (!database) {
-    throw new Error('Firebase database is not initialized. Please check your Firebase configuration.');
+// Helper function to ensure Firestore is available
+const ensureFirestore = () => {
+  if (!firestore) {
+    throw new Error('Firestore is not initialized. Please check your Firebase configuration.');
   }
-  return database;
+  return firestore;
+};
+
+// Helper function to convert Firestore timestamp to number
+const convertTimestamp = (timestamp: any): number => {
+  if (timestamp && typeof timestamp.toMillis === 'function') {
+    return timestamp.toMillis();
+  }
+  return timestamp || Date.now();
 };
 
 export const noteService = {
@@ -29,16 +40,23 @@ export const noteService = {
    */
   async createNote(userId: string, noteData: Omit<Note, 'id'>): Promise<Note> {
     try {
-      const db = ensureDatabase();
-      const notesRef = ref(db, `${NOTES_PATH}/${userId}`);
-      const newNoteRef = push(notesRef);
-      
-      const note: Note = {
+      const db = ensureFirestore();
+      const notesRef = collection(db, NOTES_COLLECTION);
+
+      const noteToCreate = {
         ...noteData,
-        id: newNoteRef.key || '',
+        userId,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
       };
 
-      await update(newNoteRef, note);
+      const docRef = await addDoc(notesRef, noteToCreate);
+
+      const note: Note = {
+        ...noteData,
+        id: docRef.id,
+      };
+
       return note;
     } catch (error) {
       console.error('Error creating note:', error);
@@ -51,17 +69,35 @@ export const noteService = {
    */
   async getNotes(userId: string): Promise<Note[]> {
     try {
-      const db = ensureDatabase();
-      const notesRef = ref(db, `${NOTES_PATH}/${userId}`);
-      const snapshot = await get(notesRef);
+      const db = ensureFirestore();
+      const notesRef = collection(db, NOTES_COLLECTION);
+      const q = query(
+        notesRef,
+        where('userId', '==', userId),
+        orderBy('updatedAt', 'desc')
+      );
 
-      if (!snapshot.exists()) {
-        return [];
-      }
-
+      const querySnapshot = await getDocs(q);
       const notes: Note[] = [];
-      snapshot.forEach(childSnapshot => {
-        notes.push(childSnapshot.val());
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        notes.push({
+          id: doc.id,
+          title: data.title,
+          content: data.content,
+          folderId: data.folderId,
+          status: data.status,
+          isPinned: data.isPinned,
+          isLocked: data.isLocked,
+          createdAt: convertTimestamp(data.createdAt),
+          updatedAt: convertTimestamp(data.updatedAt),
+          userId: data.userId,
+          tags: data.tags,
+          reminder: data.reminder,
+          isShared: data.isShared,
+          sharedWith: data.sharedWith,
+        } as Note);
       });
 
       return notes;
@@ -76,15 +112,37 @@ export const noteService = {
    */
   async getNote(userId: string, noteId: string): Promise<Note | null> {
     try {
-      const db = ensureDatabase();
-      const noteRef = ref(db, `${NOTES_PATH}/${userId}/${noteId}`);
-      const snapshot = await get(noteRef);
+      const db = ensureFirestore();
+      const noteRef = doc(db, NOTES_COLLECTION, noteId);
+      const docSnap = await getDoc(noteRef);
 
-      if (!snapshot.exists()) {
+      if (!docSnap.exists()) {
         return null;
       }
 
-      return snapshot.val();
+      const data = docSnap.data();
+      
+      // Verify the note belongs to the user
+      if (data.userId !== userId) {
+        throw new Error('Unauthorized access to note');
+      }
+
+      return {
+        id: docSnap.id,
+        title: data.title,
+        content: data.content,
+        folderId: data.folderId,
+        status: data.status,
+        isPinned: data.isPinned,
+        isLocked: data.isLocked,
+        createdAt: convertTimestamp(data.createdAt),
+        updatedAt: convertTimestamp(data.updatedAt),
+        userId: data.userId,
+        tags: data.tags,
+        reminder: data.reminder,
+        isShared: data.isShared,
+        sharedWith: data.sharedWith,
+      } as Note;
     } catch (error) {
       console.error('Error fetching note:', error);
       throw error;
@@ -96,11 +154,25 @@ export const noteService = {
    */
   async updateNote(userId: string, noteId: string, updates: Partial<Note>): Promise<void> {
     try {
-      const db = ensureDatabase();
-      const noteRef = ref(db, `${NOTES_PATH}/${userId}/${noteId}`);
-      await update(noteRef, {
-        ...updates,
-        updatedAt: Date.now(),
+      const db = ensureFirestore();
+      const noteRef = doc(db, NOTES_COLLECTION, noteId);
+      
+      // First verify the note belongs to the user
+      const docSnap = await getDoc(noteRef);
+      if (!docSnap.exists()) {
+        throw new Error('Note not found');
+      }
+      
+      if (docSnap.data().userId !== userId) {
+        throw new Error('Unauthorized access to note');
+      }
+
+      // Remove id from updates if present
+      const { id, userId: _, createdAt, ...updateData } = updates as any;
+
+      await updateDoc(noteRef, {
+        ...updateData,
+        updatedAt: Timestamp.now(),
       });
     } catch (error) {
       console.error('Error updating note:', error);
@@ -113,9 +185,20 @@ export const noteService = {
    */
   async deleteNote(userId: string, noteId: string): Promise<void> {
     try {
-      const db = ensureDatabase();
-      const noteRef = ref(db, `${NOTES_PATH}/${userId}/${noteId}`);
-      await remove(noteRef);
+      const db = ensureFirestore();
+      const noteRef = doc(db, NOTES_COLLECTION, noteId);
+      
+      // First verify the note belongs to the user
+      const docSnap = await getDoc(noteRef);
+      if (!docSnap.exists()) {
+        throw new Error('Note not found');
+      }
+      
+      if (docSnap.data().userId !== userId) {
+        throw new Error('Unauthorized access to note');
+      }
+
+      await deleteDoc(noteRef);
     } catch (error) {
       console.error('Error deleting note:', error);
       throw error;
@@ -127,18 +210,36 @@ export const noteService = {
    */
   async getNotesByStatus(userId: string, status: NoteStatus): Promise<Note[]> {
     try {
-      const db = ensureDatabase();
-      const notesRef = ref(db, `${NOTES_PATH}/${userId}`);
-      const notesQuery = query(notesRef, orderByChild('status'), equalTo(status));
-      const snapshot = await get(notesQuery);
+      const db = ensureFirestore();
+      const notesRef = collection(db, NOTES_COLLECTION);
+      const q = query(
+        notesRef,
+        where('userId', '==', userId),
+        where('status', '==', status),
+        orderBy('updatedAt', 'desc')
+      );
 
-      if (!snapshot.exists()) {
-        return [];
-      }
-
+      const querySnapshot = await getDocs(q);
       const notes: Note[] = [];
-      snapshot.forEach(childSnapshot => {
-        notes.push(childSnapshot.val());
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        notes.push({
+          id: doc.id,
+          title: data.title,
+          content: data.content,
+          folderId: data.folderId,
+          status: data.status,
+          isPinned: data.isPinned,
+          isLocked: data.isLocked,
+          createdAt: convertTimestamp(data.createdAt),
+          updatedAt: convertTimestamp(data.updatedAt),
+          userId: data.userId,
+          tags: data.tags,
+          reminder: data.reminder,
+          isShared: data.isShared,
+          sharedWith: data.sharedWith,
+        } as Note);
       });
 
       return notes;
@@ -151,22 +252,47 @@ export const noteService = {
   /**
    * Subscribe to real-time updates for all user notes
    */
-  subscribeToNotes(userId: string, callback: (notes: Note[]) => void): () => void {
+  subscribeToNotes(userId: string, callback: (notes: Note[]) => void): Unsubscribe {
     try {
-      const db = ensureDatabase();
-      const notesRef = ref(db, `${NOTES_PATH}/${userId}`);
+      const db = ensureFirestore();
+      const notesRef = collection(db, NOTES_COLLECTION);
+      const q = query(
+        notesRef,
+        where('userId', '==', userId),
+        orderBy('updatedAt', 'desc')
+      );
 
-      const unsubscribe = onValue(notesRef, snapshot => {
-        const notes: Note[] = [];
-        if (snapshot.exists()) {
-          snapshot.forEach(childSnapshot => {
-            notes.push(childSnapshot.val());
+      const unsubscribe = onSnapshot(
+        q,
+        (querySnapshot) => {
+          const notes: Note[] = [];
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            notes.push({
+              id: doc.id,
+              title: data.title,
+              content: data.content,
+              folderId: data.folderId,
+              status: data.status,
+              isPinned: data.isPinned,
+              isLocked: data.isLocked,
+              createdAt: convertTimestamp(data.createdAt),
+              updatedAt: convertTimestamp(data.updatedAt),
+              userId: data.userId,
+              tags: data.tags,
+              reminder: data.reminder,
+              isShared: data.isShared,
+              sharedWith: data.sharedWith,
+            } as Note);
           });
+          callback(notes);
+        },
+        (error) => {
+          console.error('Error in notes subscription:', error);
         }
-        callback(notes);
-      });
+      );
 
-      return () => off(notesRef);
+      return unsubscribe;
     } catch (error) {
       console.error('Error subscribing to notes:', error);
       throw error;
@@ -176,20 +302,49 @@ export const noteService = {
   /**
    * Subscribe to real-time updates for a single note
    */
-  subscribeToNote(userId: string, noteId: string, callback: (note: Note | null) => void): () => void {
+  subscribeToNote(userId: string, noteId: string, callback: (note: Note | null) => void): Unsubscribe {
     try {
-      const db = ensureDatabase();
-      const noteRef = ref(db, `${NOTES_PATH}/${userId}/${noteId}`);
+      const db = ensureFirestore();
+      const noteRef = doc(db, NOTES_COLLECTION, noteId);
 
-      const unsubscribe = onValue(noteRef, snapshot => {
-        if (snapshot.exists()) {
-          callback(snapshot.val());
-        } else {
-          callback(null);
+      const unsubscribe = onSnapshot(
+        noteRef,
+        (docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            
+            // Verify the note belongs to the user
+            if (data.userId !== userId) {
+              callback(null);
+              return;
+            }
+
+            callback({
+              id: docSnap.id,
+              title: data.title,
+              content: data.content,
+              folderId: data.folderId,
+              status: data.status,
+              isPinned: data.isPinned,
+              isLocked: data.isLocked,
+              createdAt: convertTimestamp(data.createdAt),
+              updatedAt: convertTimestamp(data.updatedAt),
+              userId: data.userId,
+              tags: data.tags,
+              reminder: data.reminder,
+              isShared: data.isShared,
+              sharedWith: data.sharedWith,
+            } as Note);
+          } else {
+            callback(null);
+          }
+        },
+        (error) => {
+          console.error('Error in note subscription:', error);
         }
-      });
+      );
 
-      return () => off(noteRef);
+      return unsubscribe;
     } catch (error) {
       console.error('Error subscribing to note:', error);
       throw error;

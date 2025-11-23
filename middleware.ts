@@ -1,35 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Block access to hidden files/directories (dotfiles) like /.env, /.git, etc.
-// Allow the web standard path ".well-known" specifically.
-const ALLOWED_DOT_SEGMENTS = new Set<string>([".well-known"]);
-
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Deny path traversal attempts
+  // Only apply security checks to specific sensitive paths
+  // This is a whitelist approach - only block known bad patterns
+
+  // 1. Block path traversal attempts
   if (pathname.includes("..")) {
+    console.warn("[Middleware] Blocked path traversal attempt:", pathname);
     return new NextResponse("Not Found", { status: 404 });
   }
 
-  // Deny any path segment that starts with a dot, except for allowed ones
   const segments = pathname.split("/").filter(Boolean);
   const hasBlockedDotSegment = segments.some((segment) => {
     if (!segment) return false;
-    if (ALLOWED_DOT_SEGMENTS.has(segment)) return false;
     return segment.startsWith(".");
   });
 
   if (hasBlockedDotSegment) {
+    console.warn("[Middleware] Blocked dotfile access attempt:", pathname);
     return new NextResponse("Not Found", { status: 404 });
   }
 
+  // Allow everything else
   return NextResponse.next();
 }
 
-// Apply to all routes except Next.js internals and common public assets
+// Only apply middleware to paths that could be security risks
+// Exclude Next.js internals, API routes, and common assets
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|site.webmanifest).*)",
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next (Next.js internals)
+     * - api (API routes - if you have them)
+     * - Common file extensions
+     */
+    "/((?!_next|api)(?!.*\\.(?:jpg|jpeg|gif|png|svg|ico|webp|woff|woff2|ttf|eot|otf|css|js|json|xml|txt|pdf)).*)",
   ],
 };

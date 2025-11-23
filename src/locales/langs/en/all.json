@@ -98,11 +98,36 @@
   "anonymous.button.changeUrl": "Change Url",
   "anonymous.button.addPassword": "Add Password",
   "anonymous.warning.deletion": "*Your note will be deleted after 20 days if not set password",
+  
+  "modal.changeUrl.title": "Change Note URL",
+  "modal.changeUrl.currentUrl": "Current URL:",
+  "modal.changeUrl.enterNewUrl": "Enter new URL ID:",
+  "modal.changeUrl.prefix": "ano_",
+  "modal.changeUrl.placeholder": "my-custom-note",
+  "modal.changeUrl.rule1": "Use letters, numbers, underscore (_), or hyphen (-)",
+  "modal.changeUrl.rule2": "Must be 3-50 characters long",
+  "modal.changeUrl.rule3": "Your note content will be moved to the new URL",
+  "modal.changeUrl.cancel": "Cancel",
+  "modal.changeUrl.changeButton": "Change URL",
+  "modal.changeUrl.success": "URL changed successfully",
+  "modal.changeUrl.error": "Failed to change URL",
+  "modal.changeUrl.errorInvalid": "Invalid URL format",
+  "modal.changeUrl.errorExists": "This URL already exists",
 
   "page.notFound.title": "404",
   "page.notFound.heading": "Page Not Found",
   "page.notFound.message": "The page you're looking for doesn't exist or has been moved.",
   "page.notFound.goToNotes": "Go to Notes",
+
+  "page.403.title": "403",
+  "page.403.heading": "Access Forbidden",
+  "page.403.message": "You don't have permission to access this resource.",
+  "page.403.goToNotes": "Go to Notes",
+
+  "page.500.title": "500",
+  "page.500.heading": "Internal Server Error",
+  "page.500.message": "Something went wrong on our end. Please try again later.",
+  "page.500.goToNotes": "Go to Notes",
 
   "page.loading.text": "Loading notes...",
   

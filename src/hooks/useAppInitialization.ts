@@ -7,39 +7,21 @@ import { localStorageService } from "@/services/localStorageService";
 
 /**
  * Hook to initialize the app for anonymous or authenticated users
- *
- * DEBUG MODE:
- * - Set DEBUG_SPLASH_DELAY in localStorage to add delay (in ms)
- * - Example: localStorage.setItem('DEBUG_SPLASH_DELAY', '3000')
- * - This will show splash screen for 3 seconds
  */
 export const useAppInitialization = () => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state: RootState) => state.user);
+  const initializeApp = () => {
+    if (!isAuthenticated) {
+      // Initialize anonymous user
+      dispatch(setAnonymousUser());
+      // Load notes from local storage
+      const localNotes = localStorageService.getNotes();
+      dispatch(setNotes(localNotes));
+    }
+  };
 
   useEffect(() => {
-    const initializeApp = async () => {
-      if (!isAuthenticated) {
-        // DEBUG: Check for splash screen delay
-        const debugDelay = localStorage.getItem("DEBUG_SPLASH_DELAY");
-        if (debugDelay) {
-          const delayMs = parseInt(debugDelay, 10);
-          console.log(`[DEBUG] Adding ${delayMs}ms delay to see splash screen`);
-          await new Promise((resolve) => setTimeout(resolve, delayMs));
-        }
-
-        // Initialize anonymous user
-        dispatch(setAnonymousUser());
-
-        // Migrate old note IDs from ano_ to anon_ (one-time migration)
-        localStorageService.migrateOldNoteIds();
-
-        // Load notes from local storage
-        const localNotes = localStorageService.getNotes();
-        dispatch(setNotes(localNotes));
-      }
-    };
-
     initializeApp();
   }, [dispatch, isAuthenticated]);
 };

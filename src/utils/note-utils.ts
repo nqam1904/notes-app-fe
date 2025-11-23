@@ -1,6 +1,9 @@
-import { Note } from '@/types/Data';
-import { generateNoteId as generateId } from './idGenerator';
-import { NOTE_EXPIRATION_MS, NOTE_EXPIRATION_DAYS } from '@/constants/constants';
+import { Note } from "@/types/Data";
+import { generateNoteId as generateId } from "./id-generator";
+import {
+  NOTE_EXPIRATION_MS,
+  NOTE_EXPIRATION_DAYS,
+} from "@/constants/constants";
 
 /**
  * Generate a unique ID for a note
@@ -13,13 +16,16 @@ export const generateNoteId = (isAnonymous: boolean = false): string => {
 /**
  * Create a new empty note
  */
-export const createEmptyNote = (userId: string, folderId?: string): Omit<Note, 'id'> => {
+export const createEmptyNote = (
+  userId: string,
+  folderId?: string
+): Omit<Note, "id"> => {
   const now = Date.now();
   return {
-    title: '',
-    content: '',
+    title: "",
+    content: "",
     folderId,
-    status: 'active',
+    status: "active",
     isPinned: false,
     isLocked: false,
     createdAt: now,
@@ -33,7 +39,7 @@ export const createEmptyNote = (userId: string, folderId?: string): Omit<Note, '
  * Sanitize note content for HTML rendering
  */
 export const sanitizeContent = (content: string): string => {
-  const div = document.createElement('div');
+  const div = document.createElement("div");
   div.textContent = content;
   return div.innerHTML;
 };
@@ -43,14 +49,14 @@ export const sanitizeContent = (content: string): string => {
  */
 export const truncateText = (text: string, maxLength: number): string => {
   if (text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + '...';
+  return text.substring(0, maxLength) + "...";
 };
 
 /**
  * Get note preview (first 100 chars)
  */
 export const getNotePreview = (note: Note): string => {
-  const cleanContent = note.content.replace(/<[^>]*>/g, '');
+  const cleanContent = note.content.replace(/<[^>]*>/g, "");
   return truncateText(cleanContent, 100);
 };
 
@@ -58,8 +64,10 @@ export const getNotePreview = (note: Note): string => {
  * Check if note is empty
  */
 export const isNoteEmpty = (note: Note): boolean => {
-  return (!note.title || note.title.trim() === '') && 
-         (!note.content || note.content.trim() === '');
+  return (
+    (!note.title || note.title.trim() === "") &&
+    (!note.content || note.content.trim() === "")
+  );
 };
 
 /**
@@ -67,22 +75,22 @@ export const isNoteEmpty = (note: Note): boolean => {
  */
 export const sortNotes = (
   notes: Note[],
-  sortBy: 'date' | 'title' = 'date',
-  sortOrder: 'asc' | 'desc' = 'desc'
+  sortBy: "date" | "title" = "date",
+  sortOrder: "asc" | "desc" = "desc"
 ): Note[] => {
   const sorted = [...notes].sort((a, b) => {
     let compareValue = 0;
 
     switch (sortBy) {
-      case 'title':
+      case "title":
         compareValue = a.title.localeCompare(b.title);
         break;
-      case 'date':
+      case "date":
       default:
         compareValue = a.updatedAt - b.updatedAt;
     }
 
-    return sortOrder === 'asc' ? compareValue : -compareValue;
+    return sortOrder === "asc" ? compareValue : -compareValue;
   });
 
   return sorted;
@@ -94,9 +102,7 @@ export const sortNotes = (
 export const filterNotesByTags = (notes: Note[], tags: string[]): Note[] => {
   if (tags.length === 0) return notes;
 
-  return notes.filter(note =>
-    tags.some(tag => note.tags?.includes(tag))
-  );
+  return notes.filter((note) => tags.some((tag) => note.tags?.includes(tag)));
 };
 
 /**
@@ -105,10 +111,11 @@ export const filterNotesByTags = (notes: Note[], tags: string[]): Note[] => {
 export const searchNotes = (notes: Note[], query: string): Note[] => {
   const lowerQuery = query.toLowerCase();
 
-  return notes.filter(note =>
-    note.title.toLowerCase().includes(lowerQuery) ||
-    note.content.toLowerCase().includes(lowerQuery) ||
-    note.tags?.some(tag => tag.toLowerCase().includes(lowerQuery))
+  return notes.filter(
+    (note) =>
+      note.title.toLowerCase().includes(lowerQuery) ||
+      note.content.toLowerCase().includes(lowerQuery) ||
+      note.tags?.some((tag) => tag.toLowerCase().includes(lowerQuery))
   );
 };
 
@@ -118,11 +125,11 @@ export const searchNotes = (notes: Note[], query: string): Note[] => {
 export const getNoteStats = (notes: Note[]) => {
   return {
     total: notes.length,
-    active: notes.filter(n => n.status === 'active').length,
-    archived: notes.filter(n => n.status === 'archived').length,
-    trashed: notes.filter(n => n.status === 'trashed').length,
-    pinned: notes.filter(n => n.isPinned).length,
-    locked: notes.filter(n => n.isLocked).length,
+    active: notes.filter((n) => n.status === "active").length,
+    archived: notes.filter((n) => n.status === "archived").length,
+    trashed: notes.filter((n) => n.status === "trashed").length,
+    pinned: notes.filter((n) => n.isPinned).length,
+    locked: notes.filter((n) => n.isLocked).length,
   };
 };
 
@@ -131,10 +138,13 @@ export const getNoteStats = (notes: Note[]) => {
  */
 export const exportNoteAsText = (note: Note): void => {
   const content = `${note.title}\n\n${note.content}`;
-  const element = document.createElement('a');
-  element.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(content)}`);
-  element.setAttribute('download', `${note.title || 'note'}.txt`);
-  element.style.display = 'none';
+  const element = document.createElement("a");
+  element.setAttribute(
+    "href",
+    `data:text/plain;charset=utf-8,${encodeURIComponent(content)}`
+  );
+  element.setAttribute("download", `${note.title || "note"}.txt`);
+  element.style.display = "none";
   document.body.appendChild(element);
   element.click();
   document.body.removeChild(element);
@@ -144,10 +154,15 @@ export const exportNoteAsText = (note: Note): void => {
  * Export note as JSON file
  */
 export const exportNoteAsJSON = (note: Note): void => {
-  const element = document.createElement('a');
-  element.setAttribute('href', `data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(note, null, 2))}`);
-  element.setAttribute('download', `${note.title || 'note'}.json`);
-  element.style.display = 'none';
+  const element = document.createElement("a");
+  element.setAttribute(
+    "href",
+    `data:application/json;charset=utf-8,${encodeURIComponent(
+      JSON.stringify(note, null, 2)
+    )}`
+  );
+  element.setAttribute("download", `${note.title || "note"}.json`);
+  element.style.display = "none";
   document.body.appendChild(element);
   element.click();
   document.body.removeChild(element);
@@ -157,7 +172,7 @@ export const exportNoteAsJSON = (note: Note): void => {
  * Get word count from note content
  */
 export const getWordCount = (content: string): number => {
-  const cleanContent = content.replace(/<[^>]*>/g, '').trim();
+  const cleanContent = content.replace(/<[^>]*>/g, "").trim();
   if (!cleanContent) return 0;
   return cleanContent.split(/\s+/).length;
 };
@@ -166,7 +181,7 @@ export const getWordCount = (content: string): number => {
  * Get character count from note content
  */
 export const getCharacterCount = (content: string): number => {
-  const cleanContent = content.replace(/<[^>]*>/g, '').trim();
+  const cleanContent = content.replace(/<[^>]*>/g, "").trim();
   return cleanContent.length;
 };
 
@@ -210,7 +225,9 @@ export const getNoteAgeInDays = (note: Note): number => {
 /**
  * Get expiration info for display
  */
-export const getExpirationInfo = (note: Note): {
+export const getExpirationInfo = (
+  note: Note
+): {
   isExpired: boolean;
   hasPassword: boolean;
   remainingDays: number;
@@ -221,8 +238,8 @@ export const getExpirationInfo = (note: Note): {
   const ageInDays = getNoteAgeInDays(note);
   const remainingDays = getRemainingDays(note);
   const isExpired = isNoteExpired(note);
-  const expirationDate = hasPassword 
-    ? null 
+  const expirationDate = hasPassword
+    ? null
     : new Date(note.createdAt + NOTE_EXPIRATION_MS);
 
   return {
@@ -233,5 +250,3 @@ export const getExpirationInfo = (note: Note): {
     expirationDate,
   };
 };
-
-

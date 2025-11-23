@@ -99,10 +99,35 @@
   "anonymous.button.addPassword": "Thêm mật khẩu",
   "anonymous.warning.deletion": "*Ghi chú của bạn sẽ bị xóa sau 20 ngày nếu không đặt mật khẩu",
 
+  "modal.changeUrl.title": "Thay Đổi URL Ghi Chú",
+  "modal.changeUrl.currentUrl": "URL hiện tại:",
+  "modal.changeUrl.enterNewUrl": "Nhập ID URL mới:",
+  "modal.changeUrl.prefix": "ano_",
+  "modal.changeUrl.placeholder": "ghi-chu-cua-toi",
+  "modal.changeUrl.rule1": "Sử dụng chữ cái, số, gạch dưới (_) hoặc gạch ngang (-)",
+  "modal.changeUrl.rule2": "Phải có độ dài từ 3-50 ký tự",
+  "modal.changeUrl.rule3": "Nội dung ghi chú của bạn sẽ được chuyển sang URL mới",
+  "modal.changeUrl.cancel": "Hủy",
+  "modal.changeUrl.changeButton": "Thay Đổi URL",
+  "modal.changeUrl.success": "Thay đổi URL thành công",
+  "modal.changeUrl.error": "Không thể thay đổi URL",
+  "modal.changeUrl.errorInvalid": "Định dạng URL không hợp lệ",
+  "modal.changeUrl.errorExists": "URL này đã tồn tại",
+
   "page.notFound.title": "404",
   "page.notFound.heading": "Không Tìm Thấy Trang",
   "page.notFound.message": "Trang bạn đang tìm kiếm không tồn tại hoặc đã được di chuyển.",
   "page.notFound.goToNotes": "Đến Ghi Chú",
+
+  "page.403.title": "403",
+  "page.403.heading": "Truy Cập Bị Từ Chối",
+  "page.403.message": "Bạn không có quyền truy cập vào tài nguyên này.",
+  "page.403.goToNotes": "Đến Ghi Chú",
+
+  "page.500.title": "500",
+  "page.500.heading": "Lỗi Máy Chủ Nội Bộ",
+  "page.500.message": "Đã xảy ra lỗi từ phía chúng tôi. Vui lòng thử lại sau.",
+  "page.500.goToNotes": "Đến Ghi Chú",
 
   "page.loading.text": "Đang tải ghi chú...",
 
