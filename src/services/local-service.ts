@@ -108,7 +108,6 @@ export const localStorageService = {
    */
   deleteNote(noteId: string): boolean {
     const notes = getAllNotes();
-    console.log('before delete notes', notes);
 
     if (!notes) {
       return false;
@@ -118,7 +117,6 @@ export const localStorageService = {
     }
 
     localStorage.removeItem(ANONYMOUS_NOTES_KEY);
-    console.log('after delete notes - removed');
     return true;
   },
 
