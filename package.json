@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "all": "yarn clean && yarn && yarn build && yarn dev",
-    "clean": "rm -rf .next && rm -rf node_modules",
+    "clean": "rm -rf .next && rm -rf yarn.lock && rm -rf package-lock.json && rm -rf node_modules",
     "dev": "env-cmd -f .env next dev",
     "prod": "env-cmd -f .env.production next dev",
     "build": "next build",
