@@ -25,4 +25,5 @@ A modern, feature-rich note-taking application built with Next.js and Firebase F
 - **Authentication**: Firebase Auth
 - **Storage**: Firebase Storage
 - **Internationalization**: i18next
-- **Build Tool**: Next.js=
+- **Build Tool**: Next.js
+
