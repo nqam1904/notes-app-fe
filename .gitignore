@@ -77,4 +77,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 firestore.rules
-yarn.lockpackage-lock.json
+yarn.lock
+package-lock.json
